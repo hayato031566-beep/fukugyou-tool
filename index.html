@@ -1,14 +1,10 @@
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>eBay利益計算ツール｜売値・送料・手数料・為替を自動計算</title>
-  <meta
-    name="description"
-    content="eBay販売の利益を簡単に計算できる無料ツールです。売値・仕入れ・送料・eBay手数料・為替レートを入力するだけで、利益と利益率を自動で表示します。"
-  />
+  <meta name="description" content="eBay販売の利益を簡単に計算できる無料ツールです。売値・仕入れ・送料・eBay手数料・為替レートを入力するだけで、利益と利益率を自動で表示します。" />
   <style>
     * {
       box-sizing: border-box;
@@ -98,6 +94,37 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     }
 
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover {
+      opacity: 0.95;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-reset {
+      background: #3b82f6;
+      color: #fff;
+    }
+
     .result-box {
       margin-top: 24px;
       padding: 18px;
@@ -141,6 +168,27 @@
 
     .profit-minus {
       color: #dc2626;
+    }
+
+    .warning-box {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+
+    .warning-title {
+      font-weight: 800;
+      margin: 0 0 6px;
+    }
+
+    .warning-text {
+      margin: 0;
+      font-size: 14px;
+      color: #b91c1c;
     }
 
     .note {
@@ -202,7 +250,7 @@
 
         <div class="field">
           <label for="rate">為替レート（1USD=円）</label>
-          <input type="number" id="rate" placeholder="例：150" step="0.01" />
+          <input type="number" id="rate" placeholder="例：150" step="0.01" value="150" />
         </div>
 
         <div class="field">
@@ -222,8 +270,12 @@
 
         <div class="field">
           <label for="otherCost">その他経費（円）</label>
-          <input type="number" id="otherCost" placeholder="例：500" step="0.01" />
+          <input type="number" id="otherCost" placeholder="例：500（梱包費など）" step="0.01" />
         </div>
+      </div>
+
+      <div class="button-row">
+        <button id="resetBtn" class="btn btn-reset">リセット</button>
       </div>
 
       <div class="result-box">
@@ -253,6 +305,11 @@
             <div class="result-value" id="breakEven">0 USD</div>
           </div>
         </div>
+      </div>
+
+      <div id="warningMessage" class="warning-box">
+        <p class="warning-title">⚠️ 赤字です</p>
+        <p class="warning-text" id="warningReason">送料・手数料・仕入れ値を見直してください。</p>
       </div>
 
       <p class="note">※ 入力すると自動で計算されます。</p>
@@ -297,6 +354,10 @@
     const profitRateEl = document.getElementById('profitRate');
     const breakEvenEl = document.getElementById('breakEven');
 
+    const warningMessageEl = document.getElementById('warningMessage');
+    const warningReasonEl = document.getElementById('warningReason');
+    const resetBtn = document.getElementById('resetBtn');
+
     const inputs = [saleUsd, rate, cost, ebayFee, shipping, otherCost];
 
     function getNumber(value) {
@@ -305,7 +366,8 @@
     }
 
     function formatYen(value) {
-      return Math.round(value).toLocaleString('ja-JP') + '円';
+      const rounded = Math.round(Math.abs(value)).toLocaleString('ja-JP') + '円';
+      return value < 0 ? '-' + rounded : rounded;
     }
 
     function formatPercent(value) {
@@ -323,6 +385,27 @@
         profitEl.classList.add('profit-minus');
         profitRateEl.classList.add('profit-minus');
       }
+    }
+
+    function getTopReason(costValue, ebayFeeValue, shippingValue, otherCostValue, salesJpy, profit) {
+      const items = [
+        { name: '仕入れ値', value: costValue },
+        { name: 'eBay手数料', value: ebayFeeValue },
+        { name: '送料', value: shippingValue },
+        { name: 'その他経費', value: otherCostValue }
+      ];
+
+      items.sort((a, b) => b.value - a.value);
+
+      if (salesJpy <= 0) {
+        return 'まず売値と為替レートを入力してください。';
+      }
+
+      if (profit < 0 && items[0].value > 0) {
+        return `主な原因は${items[0].name}が大きいことです。いちばん大きいコストは ${items[0].value.toLocaleString('ja-JP')}円 です。`;
+      }
+
+      return '送料・手数料・仕入れ値を見直してください。';
     }
 
     function calculate() {
@@ -346,15 +429,37 @@
       breakEvenEl.textContent = breakEvenUsd.toFixed(2) + ' USD';
 
       updateProfitColor(profit);
+
+      if (profit < 0) {
+        warningMessageEl.style.display = 'block';
+        warningReasonEl.textContent = getTopReason(
+          costValue,
+          ebayFeeValue,
+          shippingValue,
+          otherCostValue,
+          salesJpy,
+          profit
+        );
+      } else {
+        warningMessageEl.style.display = 'none';
+      }
     }
 
     inputs.forEach((input) => {
       input.addEventListener('input', calculate);
     });
 
+    resetBtn.addEventListener('click', () => {
+      saleUsd.value = '';
+      rate.value = '150';
+      cost.value = '';
+      ebayFee.value = '';
+      shipping.value = '';
+      otherCost.value = '';
+      calculate();
+    });
+
     calculate();
   </script>
 </body>
 </html>
-```
-
