@@ -1,302 +1,231 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>eBay Profit Manager Pro</title>
-  <style>
-    :root { --main: #00457C; --accent: #ffae00; --bg: #f0f2f5; --white: #ffffff; --green: #28a745; --red: #dc3545; }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-    body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; line-height: 1.5; }
-    
-    /* Header & Tabs */
-    .header { background: var(--main); color: #fff; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; position: sticky; top: 0; z-index: 100; }
-    .tabs { display: flex; background: var(--main); border-bottom: 2px solid rgba(0,0,0,0.1); }
-    .tab { flex: 1; padding: 12px; text-align: center; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; }
-    .tab.active { color: #fff; border-bottom: 4px solid var(--accent); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eBay輸出 利益計算ツール PRO</title>
+    <style>
+        :root {
+            --ebay-blue: #0064d2;
+            --ebay-red: #e53238;
+            --ebay-yellow: #f5af02;
+            --ebay-green: #86b817;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+        }
 
-    .container { max-width: 500px; margin: 0 auto; padding: 12px; }
-    .page { display: none; }
-    .page.active { display: block; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            padding: 20px 15px;
+        }
 
-    /* Cards */
-    .card { background: var(--white); border-radius: 16px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 12px; }
-    h2 { font-size: 14px; margin: 0 0 12px; color: var(--main); border-left: 4px solid var(--accent); padding-left: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-top: 10px solid var(--ebay-blue);
+        }
 
-    /* Forms */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .field { display: flex; flex-direction: column; margin-bottom: 5px; }
-    .field.full { grid-column: 1 / 3; }
-    label { font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #666; }
-    input { padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; transition: 0.2s; }
-    input:focus { border-color: var(--main); background: #fdfdfd; }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin: 0 0 5px 0;
+            color: var(--text-dark);
+        }
 
-    /* Results */
-    .result-box { background: var(--main); color: #fff; border-radius: 12px; padding: 15px; margin-top: 5px; text-align: center; }
-    .res-row { display: flex; justify-content: space-around; font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
-    #profit { font-size: 32px; font-weight: bold; margin-bottom: 5px; }
-    .res-footer { font-size: 12px; }
+        .tagline {
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
 
-    /* Quick Buttons */
-    .quick-group { display: flex; gap: 5px; margin-top: 5px; }
-    .q-btn { background: #eee; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; cursor: pointer; color: #555; }
+        .exchange-box {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
 
-    /* Reverse Calc */
-    .btn-toggle { width: 100%; padding: 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 10px; font-size: 11px; color: #666; cursor: pointer; margin-top: 10px; }
-    #backCalcPanel { display: none; background: #fffde7; border: 1px dashed var(--accent); padding: 15px; border-radius: 12px; margin-top: 10px; animation: fadeIn 0.3s; }
+        .exchange-box label { font-size: 12px; color: #475569; font-weight: bold; }
+        .exchange-box input { width: 80px; text-align: right; border: none; background: transparent; font-size: 18px; font-weight: bold; color: var(--ebay-blue); outline: none; }
 
-    /* Reports & Progress */
-    .progress-wrap { margin-bottom: 15px; }
-    .bar-bg { background: #eee; height: 12px; border-radius: 6px; overflow: hidden; margin: 8px 0; }
-    .bar-fill { background: var(--green); height: 100%; width: 0%; transition: 1s ease-out; }
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-bottom: 15px; }
-    .sum-item { padding: 10px; border-radius: 10px; background: #f8f9fa; }
+        .input-section { margin-bottom: 20px; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
 
-    /* Buttons */
-    .btn-save { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 15px; cursor: pointer; box-shadow: 0 4px 0 #d48a00; }
-    .btn-save:active { transform: translateY(2px); box-shadow: none; }
-    .btn-reset { width: 100%; background: none; border: none; color: #888; text-decoration: underline; margin-top: 15px; font-size: 12px; cursor: pointer; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #334155; }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 16px;
+            transition: 0.2s;
+            background: #fff;
+            outline: none;
+        }
 
-    /* History List */
-    .hist-card { background: #fff; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .hist-del { color: var(--red); background: none; border: none; font-size: 20px; cursor: pointer; }
+        input:focus { border-color: var(--ebay-blue); background: #fdfdfd; }
 
-    #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px; border-radius: 25px; font-size: 13px; display: none; z-index: 1000; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  </style>
+        .result-panel {
+            background: #1e293b;
+            color: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            transition: background 0.3s ease;
+        }
+
+        .main-profit { text-align: center; margin-bottom: 20px; }
+        .main-profit span { font-size: 14px; color: #94a3b8; }
+        .main-profit h2 { font-size: 36px; margin: 5px 0; font-weight: 800; color: #fff; }
+
+        .sub-results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+        }
+
+        .sub-item label { color: #94a3b8; font-size: 11px; margin-bottom: 2px; }
+        .sub-item div { font-size: 18px; font-weight: bold; }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* 動きの演出 */
+        .pop { animation: pop 0.3s ease-out; }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+    </style>
 </head>
 <body>
 
-<div id="toast"></div>
-<div class="header">eBay Profit Manager</div>
-
-<div class="tabs">
-  <div class="tab active" id="tab-calc" onclick="switchTab('calcPage')">利益計算</div>
-  <div class="tab" id="tab-report" onclick="switchTab('reportPage')">集計レポート</div>
-</div>
-
 <div class="container">
-  <div id="calcPage" class="page active">
-    <div class="card">
-      <div class="field full" style="margin-bottom: 10px;">
-        <label>商品名 / メモ</label>
-        <input type="text" id="itemName" placeholder="例：キヤノン EOS R6">
-      </div>
-      <div class="form-grid">
-        <div class="field"><label>為替レート (¥/$)</label><input type="number" id="rate" value="150" step="0.1"></div>
-        <div class="field"><label>eBay手数料 (%)</label><input type="number" id="feePercent" value="15" step="0.1"></div>
-        <div class="field"><label>売値 (USD)</label><input type="number" id="saleUsd" placeholder="0"></div>
-        <div class="field"><label>仕入れ (円)</label><input type="number" id="cost" placeholder="0"></div>
-        <div class="field">
-          <label>送料 (円)</label>
-          <input type="number" id="shipping" placeholder="0">
-          <div class="quick-group">
-            <button class="q-btn" onclick="setShipping(3000)">FedEx</button>
-            <button class="q-btn" onclick="setShipping(5000)">EMS</button>
-          </div>
+    <h1>🚢 eBay 利益計算 PRO</h1>
+    <p class="tagline">ドル売上から円の純利益を爆速計算</p>
+
+    <div class="exchange-box">
+        <label>現在の為替レート (1ドル)</label>
+        <div>
+            <input type="number" id="rate" value="150" oninput="calc()">
+            <span style="font-weight: bold; color: var(--ebay-blue);">円</span>
         </div>
-        <div class="field"><label>その他経費 (円)</label><input type="number" id="other" value="0"></div>
-      </div>
+    </div>
 
-      <button class="btn-toggle" onclick="toggleBackCalc()">▼ 利益から売値を逆算する (ON/OFF)</button>
-      <div id="backCalcPanel">
-        <label>手元にいくら残したい？ (日本円)</label>
-        <div style="display:flex; gap:10px; margin-top:5px;">
-          <input type="number" id="targetProfit" value="3000" style="flex:1;">
-          <button onclick="calcBack()" style="background:var(--main); color:#fff; border:none; border-radius:8px; padding:0 15px; font-weight:bold;">逆算実行</button>
+    <div class="input-section">
+        <div class="input-row">
+            <div>
+                <label>販売価格 ($)</label>
+                <input type="number" id="usd_price" placeholder="150" oninput="calc()">
+            </div>
+            <div>
+                <label>仕入れ値 (円)</label>
+                <input type="number" id="jpy_cost" placeholder="12000" oninput="calc()">
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div class="result-box">
-      <div class="res-row"><span>売上: <span id="salesJpy">¥0</span></span><span>手数料: <span id="feeJpy">¥0</span></span></div>
-      <div id="profit">¥0</div>
-      <div class="res-footer">利益率: <span id="profitRate">0%</span></div>
-    </div>
-
-    <button class="btn-save" onclick="saveRecord()">この計算結果を保存する</button>
-    <button class="btn-reset" onclick="resetInputs()">入力のみリセット</button>
-  </div>
-
-  <div id="reportPage" class="page">
-    <div class="card">
-      <h2>📈 今月の目標達成度 <button class="q-btn" onclick="setGoal()">目標設定</button></h2>
-      <div class="progress-wrap">
-        <div style="display:flex; justify-content:space-between; font-size:12px;">
-          <span id="goalText">目標: ¥100,000</span>
-          <span id="percentText">0%</span>
+        <div class="input-row">
+            <div>
+                <label>eBay手数料 (%)</label>
+                <input type="number" id="fee_per" value="15" oninput="calc()">
+            </div>
+            <div>
+                <label>送料・資材 (円)</label>
+                <input type="number" id="shipping" placeholder="3000" oninput="calc()">
+            </div>
         </div>
-        <div class="bar-bg"><div id="goalBar" class="bar-fill"></div></div>
-        <div id="monthTotal" style="font-size:24px; font-weight:bold; color:var(--main); text-align:center;">¥0</div>
-      </div>
-      
-      <div class="summary-grid">
-        <div class="sum-item"><div style="font-size:10px; color:var(--green);">黒字件数</div><b id="plusCount">0</b></div>
-        <div class="sum-item"><div style="font-size:10px; color:var(--red);">赤字件数</div><b id="minusCount">0</b></div>
-      </div>
+
+        <div>
+            <label>その他経費 (円)</label>
+            <input type="number" id="other" placeholder="0" oninput="calc()">
+        </div>
     </div>
 
-    <div class="card">
-      <h2>📜 直近の履歴</h2>
-      <div id="historyList"></div>
-      <button class="btn-reset" style="color:var(--red);" onclick="clearAllData()">全履歴を削除</button>
+    <div class="result-panel" id="res_panel">
+        <div class="main-profit">
+            <span>純利益（日本円手残り）</span>
+            <h2 id="profit_jpy">¥0</h2>
+        </div>
+        
+        <div class="sub-results">
+            <div class="sub-item">
+                <label>売上高（円換算）</label>
+                <div id="sales_jpy">¥0</div>
+            </div>
+            <div class="sub-item">
+                <label>利益率</label>
+                <div id="margin">0.0%</div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <div class="footer">
+        © 2026 eBay Profit Tracker | あなたの副業を最強に。
+    </div>
 </div>
 
 <script>
-  // --- 初期設定 & 要素取得 ---
-  const fields = ['itemName', 'rate', 'feePercent', 'saleUsd', 'cost', 'shipping', 'other'];
-  const inputs = {};
-  fields.forEach(id => inputs[id] = document.getElementById(id));
+    function calc() {
+        // 入力値の取得
+        const rate = parseFloat(document.getElementById('rate').value) || 1;
+        const usd = parseFloat(document.getElementById('usd_price').value) || 0;
+        const cost = parseFloat(document.getElementById('jpy_cost').value) || 0;
+        const feePer = parseFloat(document.getElementById('fee_per').value) || 0;
+        const ship = parseFloat(document.getElementById('shipping').value) || 0;
+        const other = parseFloat(document.getElementById('other').value) || 0;
 
-  // ローカルストレージから設定復元
-  window.onload = () => {
-    inputs.rate.value = localStorage.getItem('cfg_rate') || 150;
-    inputs.feePercent.value = localStorage.getItem('cfg_fee') || 15;
-    updateReport();
-  };
+        // 計算ロジック
+        const salesJpy = usd * rate; // 円換算売上
+        const ebayFee = salesJpy * (feePer / 100); // 手数料
+        const totalCost = cost + ebayFee + ship + other; // 総コスト
+        const profit = salesJpy - totalCost; // 純利益
+        const margin = salesJpy > 0 ? (profit / salesJpy) * 100 : 0;
 
-  function switchTab(pId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(pId).classList.add('active');
-    document.getElementById(pId === 'calcPage' ? 'tab-calc' : 'tab-report').classList.add('active');
-    if(pId === 'reportPage') updateReport();
-  }
+        // 画面への反映
+        updateText('sales_jpy', "¥" + Math.floor(salesJpy).toLocaleString());
+        updateText('profit_jpy', "¥" + Math.floor(profit).toLocaleString());
+        updateText('margin', margin.toFixed(1) + "%");
 
-  function setShipping(v) { inputs.shipping.value = v; calc(); }
-  function toggleBackCalc() { 
-    const p = document.getElementById('backCalcPanel');
-    p.style.display = p.style.display === 'block' ? 'none' : 'block';
-  }
-
-  // --- 計算ロジック ---
-  function calc() {
-    const val = (id) => parseFloat(inputs[id].value) || 0;
-    
-    // 設定を保存
-    localStorage.setItem('cfg_rate', inputs.rate.value);
-    localStorage.setItem('cfg_fee', inputs.feePercent.value);
-
-    const sJpy = Math.round(val('saleUsd') * val('rate'));
-    const fJpy = Math.round(sJpy * (val('feePercent') / 100));
-    const totalExp = val('cost') + val('shipping') + val('other') + fJpy;
-    const profit = sJpy - totalExp;
-    const rate = sJpy > 0 ? (profit / sJpy) * 100 : 0;
-
-    document.getElementById('salesJpy').textContent = '¥' + sJpy.toLocaleString();
-    document.getElementById('feeJpy').textContent = '¥' + fJpy.toLocaleString();
-    const pEl = document.getElementById('profit');
-    pEl.textContent = (profit >= 0 ? '¥' : '-¥') + Math.abs(profit).toLocaleString();
-    pEl.style.color = profit >= 0 ? '#4ade80' : '#ff6b6b';
-    document.getElementById('profitRate').textContent = rate.toFixed(1) + '%';
-  }
-  fields.forEach(id => inputs[id].addEventListener('input', calc));
-
-  // 逆算機能
-  function calcBack() {
-    const target = parseFloat(document.getElementById('targetProfit').value) || 0;
-    const val = (id) => parseFloat(inputs[id].value) || 0;
-    const rate = val('rate');
-    const fP = val('feePercent') / 100;
-    
-    if(rate <= 0) return;
-    // 公式: (利益 + 仕入 + 送料 + 他) / (レート * (1 - 手数料率))
-    const res = (target + val('cost') + val('shipping') + val('other')) / (rate * (1 - fP));
-    inputs.saleUsd.value = Math.ceil(res);
-    calc();
-    showToast('売値を自動設定しました');
-  }
-
-  // --- 保存 & 履歴管理 ---
-  function saveRecord() {
-    if(!inputs.saleUsd.value) return showToast('売値を入力してください');
-    
-    const profit = parseInt(document.getElementById('profit').textContent.replace(/[¥,]/g, '').replace('-', '')) * (document.getElementById('profit').textContent.includes('-') ? -1 : 1);
-    const record = {
-      id: Date.now(),
-      name: inputs.itemName.value || '無題の商品',
-      sale: inputs.saleUsd.value,
-      profit: profit,
-      date: new Date().toISOString()
-    };
-
-    let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
-    data.unshift(record);
-    localStorage.setItem('ebay_pro_data', JSON.stringify(data));
-    showToast('保存完了！');
-  }
-
-  function updateReport() {
-    const data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
-    const goal = parseInt(localStorage.getItem('cfg_goal') || 100000);
-    let mSum = 0, pCount = 0, mCount = 0;
-    
-    const listEl = document.getElementById('historyList');
-    listEl.innerHTML = '';
-
-    data.forEach(item => {
-      mSum += item.profit;
-      if(item.profit >= 0) pCount++; else mCount++;
-
-      const div = document.createElement('div');
-      div.className = 'hist-card';
-      div.innerHTML = `
-        <div style="flex:1">
-          <div style="font-weight:bold; font-size:13px;">${item.name}</div>
-          <div style="font-size:10px; color:#888;">$${item.sale} - ${new Date(item.date).toLocaleDateString()}</div>
-        </div>
-        <div style="color:${item.profit>=0 ? 'var(--green)' : 'var(--red)'}; font-weight:bold; margin-right:10px;">¥${item.profit.toLocaleString()}</div>
-        <button class="hist-del" onclick="deleteItem(${item.id})">×</button>
-      `;
-      listEl.appendChild(div);
-    });
-
-    document.getElementById('monthTotal').textContent = '¥' + mSum.toLocaleString();
-    document.getElementById('plusCount').textContent = pCount;
-    document.getElementById('minusCount').textContent = mCount;
-    document.getElementById('goalText').textContent = '目標: ¥' + goal.toLocaleString();
-    
-    const per = Math.min(100, Math.max(0, Math.round((mSum / goal) * 100)));
-    document.getElementById('goalBar').style.width = per + '%';
-    document.getElementById('percentText').textContent = per + '%';
-  }
-
-  function setGoal() {
-    const g = prompt('今月の目標利益を入力してください (円)', '100000');
-    if(g) {
-      localStorage.setItem('cfg_goal', g);
-      updateReport();
+        // 赤字ならパネルの色を変える
+        const panel = document.getElementById('res_panel');
+        if (profit < 0) {
+            panel.style.background = "#e53238"; // eBay Red
+        } else {
+            panel.style.background = "#1e293b"; // Dark Slate
+        }
     }
-  }
 
-  function deleteItem(id) {
-    let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
-    data = data.filter(i => i.id !== id);
-    localStorage.setItem('ebay_pro_data', JSON.stringify(data));
-    updateReport();
-  }
-
-  function resetInputs() {
-    if(confirm('入力をリセットしますか？ (為替と手数料は残ります)')) {
-      ['itemName', 'saleUsd', 'cost', 'shipping', 'other'].forEach(id => inputs[id].value = (id==='other' ? 0 : ''));
-      calc();
+    function updateText(id, val) {
+        const el = document.getElementById(id);
+        if (el.innerText !== val) {
+            el.innerText = val;
+            el.classList.remove('pop');
+            void el.offsetWidth; // アニメーションリセット
+            el.classList.add('pop');
+        }
     }
-  }
-
-  function clearAllData() {
-    if(confirm('すべての履歴を削除しますか？')) {
-      localStorage.removeItem('ebay_pro_data');
-      updateReport();
-    }
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 2000);
-  }
 </script>
+
 </body>
 </html>
