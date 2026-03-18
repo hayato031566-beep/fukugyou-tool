@@ -219,12 +219,15 @@
             <div class="result-value" id="profit">0円</div>
           </div>
 
-          <div class="result-item">
-            <div class="result-label">利益率（％）</div>
-            <div class="result-value" id="profitRate">0%</div>
-          </div>
-        </div>
-      </div>
+         <div class="result-item">
+  <div class="result-label">利益率（％）</div>
+  <div class="result-value" id="profitRate">0%</div>
+</div>
+
+<div class="result-item">
+  <div class="result-label">損益分岐売値（USD）</div>
+  <div class="result-value" id="breakEven">0 USD</div>
+</div>
 
       <p class="note">※ 入力すると自動で計算されます。</p>
       <div class="card" style="margin-top:20px;">
@@ -261,11 +264,11 @@
     const shipping = document.getElementById('shipping');
     const otherCost = document.getElementById('otherCost');
 
-    const salesJpyEl = document.getElementById('salesJpy');
+   const salesJpyEl = document.getElementById('salesJpy');
     const totalCostEl = document.getElementById('totalCost');
     const profitEl = document.getElementById('profit');
-    const profitRateEl = document.getElementById('profitRate');
-
+  const profitRateEl = document.getElementById('profitRate');
+const breakEvenEl = document.getElementById('breakEven');
     const inputs = [saleUsd, rate, cost, ebayFee, shipping, otherCost];
 
     function getNumber(value) {
@@ -306,11 +309,13 @@
       const totalCost = costValue + ebayFeeValue + shippingValue + otherCostValue;
       const profit = salesJpy - totalCost;
       const profitRate = salesJpy > 0 ? (profit / salesJpy) * 100 : 0;
+      const breakEvenUsd = rateValue > 0 ? totalCost / rateValue : 0;
 
       salesJpyEl.textContent = formatYen(salesJpy);
       totalCostEl.textContent = formatYen(totalCost);
       profitEl.textContent = formatYen(profit);
       profitRateEl.textContent = formatPercent(profitRate);
+      breakEvenEl.textContent = breakEvenUsd.toFixed(2) + ' USD';
 
       updateProfitColor(profit);
     }
