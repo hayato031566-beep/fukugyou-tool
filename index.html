@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>副業利益計算ツール</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+      background: #f5f7fb;
+      color: #222;
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .desc {
+      margin: 0 0 24px;
+      color: #666;
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .field.full {
+      grid-column: 1 / -1;
+    }
+    label {
+      font-weight: 700;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d7dce5;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary {
+      background: #4f46e5;
+      color: #fff;
+    }
+    .secondary {
+      background: #eef2ff;
+      color: #333;
+    }
+    .result {
+      margin-top: 28px;
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+    }
+    .result h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+    .result-list {
+      display: grid;
+      gap: 12px;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #eceff4;
+      gap: 16px;
+    }
+    .item span:first-child {
+      color: #555;
+    }
+    .item strong {
+      font-size: 18px;
+    }
+    .profit-plus strong {
+      color: #16a34a;
+    }
+    .profit-minus strong {
+      color: #dc2626;
+    }
+    .note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #666;
+    }
+    @media (max-width: 640px) {
+      .wrap { margin: 20px auto; padding: 14px; }
+      .card { padding: 18px; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 24px; }
+      .item { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>副業利益計算ツール</h1>
+      <p class="desc">売上・原価・手数料・送料・広告費などを入力すると、利益と利益率を自動で計算できます。</p>
+
+      <div class="grid">
+        <div class="field">
+          <label for="sales">売上金額（円）</label>
+          <input type="number" id="sales" placeholder="例：50000" min="0" />
+        </div>
+
+        <div class="field">
+          <label for="cost">仕入れ・原価（円）</label>
+          <input type="number" id="cost" placeholder="例：20000" min="0" />
+        </div>
+
+        <div class="field">
+          <label for="fee">販売手数料（円）</label>
+          <input type="number" id="fee" placeholder="例：5000" min="0" />
+        </div>
+
+        <div class="field">
+          <label for="shipping">送料（円）</label>
+          <input type="number" id="shipping" placeholder="例：1200" min="0" />
+        </div>
+
+        <div class="field">
+          <label for="ad">広告費（円）</label>
+          <input type="number" id="ad" placeholder="例：3000" min="0" />
+        </div>
+
+        <div class="field">
+          <label for="other">その他経費（円）</label>
+          <input type="number" id="other" placeholder="例：800" min="0" />
+        </div>
+
+        <div class="field full">
+          <label for="monthlySales">月間販売数（個・件）</label>
+          <input type="number" id="monthlySales" placeholder="例：30" min="0" />
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="primary" id="calcBtn">計算する</button>
+        <button class="secondary" id="resetBtn">リセット</button>
+      </div>
+
+      <div class="result" id="result">
+        <h2>計算結果</h2>
+        <div class="result-list">
+          <div class="item">
+            <span>1件あたりの利益</span>
+            <strong id="profitPerItem">0円</strong>
+          </div>
+          <div class="item">
+            <span>利益率</span>
+            <strong id="profitRate">0%</strong>
+          </div>
+          <div class="item">
+            <span>総経費</span>
+            <strong id="totalExpense">0円</strong>
+          </div>
+          <div class="item">
+            <span>月間予想利益</span>
+            <strong id="monthlyProfit">0円</strong>
+          </div>
+        </div>
+        <p class="note">※ 税金は含めていません。必要なら別で管理してください。</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const salesInput = document.getElementById('sales');
+    const costInput = document.getElementById('cost');
+    const feeInput = document.getElementById('fee');
+    const shippingInput = document.getElementById('shipping');
+    const adInput = document.getElementById('ad');
+    const otherInput = document.getElementById('other');
+    const monthlySalesInput = document.getElementById('monthlySales');
+
+    const profitPerItemEl = document.getElementById('profitPerItem');
+    const profitRateEl = document.getElementById('profitRate');
+    const totalExpenseEl = document.getElementById('totalExpense');
+    const monthlyProfitEl = document.getElementById('monthlyProfit');
+    const resultBox = document.getElementById('result');
+
+    const calcBtn = document.getElementById('calcBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function getValue(input) {
+      return Number(input.value) || 0;
+    }
+
+    function formatYen(value) {
+      return value.toLocaleString('ja-JP') + '円';
+    }
+
+    function calculateProfit() {
+      const sales = getValue(salesInput);
+      const cost = getValue(costInput);
+      const fee = getValue(feeInput);
+      const shipping = getValue(shippingInput);
+      const ad = getValue(adInput);
+      const other = getValue(otherInput);
+      const monthlySales = getValue(monthlySalesInput);
+
+      const totalExpense = cost + fee + shipping + ad + other;
+      const profitPerItem = sales - totalExpense;
+      const profitRate = sales > 0 ? (profitPerItem / sales) * 100 : 0;
+      const monthlyProfit = profitPerItem * monthlySales;
+
+      profitPerItemEl.textContent = formatYen(profitPerItem);
+      profitRateEl.textContent = profitRate.toFixed(1) + '%';
+      totalExpenseEl.textContent = formatYen(totalExpense);
+      monthlyProfitEl.textContent = formatYen(monthlyProfit);
+
+      resultBox.classList.remove('profit-plus', 'profit-minus');
+      resultBox.classList.add(profitPerItem >= 0 ? 'profit-plus' : 'profit-minus');
+    }
+
+    function resetForm() {
+      [salesInput, costInput, feeInput, shippingInput, adInput, otherInput, monthlySalesInput].forEach(input => {
+        input.value = '';
+      });
+      profitPerItemEl.textContent = '0円';
+      profitRateEl.textContent = '0%';
+      totalExpenseEl.textContent = '0円';
+      monthlyProfitEl.textContent = '0円';
+      resultBox.classList.remove('profit-plus', 'profit-minus');
+    }
+
+    calcBtn.addEventListener('click', calculateProfit);
+    resetBtn.addEventListener('click', resetForm);
+
+    [salesInput, costInput, feeInput, shippingInput, adInput, otherInput, monthlySalesInput].forEach(input => {
+      input.addEventListener('input', calculateProfit);
+    });
+  </script>
+</body>
+</html>
