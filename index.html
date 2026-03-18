@@ -2,228 +2,191 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eBay輸出 利益計算ツール PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>eBay利益計算 PRO</title>
     <style>
         :root {
             --ebay-blue: #0064d2;
-            --ebay-red: #e53238;
-            --ebay-yellow: #f5af02;
-            --ebay-green: #86b817;
             --bg-color: #f0f4f8;
-            --card-bg: #ffffff;
             --text-dark: #1e293b;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        /* 横はみ出しを絶対防ぐ設定 */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; 
+        }
         
+        html, body {
+            overflow-x: hidden; /* 横スクロールを禁止 */
+            width: 100%;
+        }
+
         body {
-            margin: 0;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-dark);
             display: flex;
             justify-content: center;
-            padding: 20px 15px;
+            padding: 15px; /* 外側の余白 */
         }
 
         .container {
             width: 100%;
-            max-width: 480px;
-            background: var(--card-bg);
-            border-radius: 28px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            border-top: 10px solid var(--ebay-blue);
+            max-width: 400px; /* 少しスリムにして余裕を持たせる */
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-top: 8px solid var(--ebay-blue);
         }
 
-        h1 {
-            font-size: 24px;
-            text-align: center;
-            margin: 0 0 5px 0;
-            color: var(--text-dark);
-        }
+        h1 { font-size: 20px; text-align: center; margin-bottom: 5px; }
+        .tagline { text-align: center; font-size: 12px; color: #64748b; margin-bottom: 20px; }
 
-        .tagline {
-            text-align: center;
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 25px;
-        }
-
+        /* 為替ボックス */
         .exchange-box {
             background: #f8fafc;
-            border-radius: 15px;
-            padding: 15px;
+            border-radius: 12px;
+            padding: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             border: 1px solid #e2e8f0;
         }
+        .exchange-box label { font-size: 11px; font-weight: bold; }
+        .exchange-box input { width: 60px; border: none; background: transparent; font-size: 16px; font-weight: bold; color: var(--ebay-blue); text-align: right; outline: none; }
 
-        .exchange-box label { font-size: 12px; color: #475569; font-weight: bold; }
-        .exchange-box input { width: 80px; text-align: right; border: none; background: transparent; font-size: 18px; font-weight: bold; color: var(--ebay-blue); outline: none; }
+        /* 入力エリア */
+        .input-row { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 12px; 
+            width: 100%;
+        }
+        .input-group { flex: 1; min-width: 0; } /* min-width: 0 がはみ出し防止のコツ */
 
-        .input-section { margin-bottom: 20px; }
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #334155; }
+        label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 5px; color: #475569; }
         
         input[type="number"] {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: 2px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 10px;
             font-size: 16px;
-            transition: 0.2s;
-            background: #fff;
             outline: none;
+            -moz-appearance: textfield;
         }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-        input:focus { border-color: var(--ebay-blue); background: #fdfdfd; }
-
+        /* 結果表示 */
         .result-panel {
             background: #1e293b;
             color: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-top: 30px;
-            transition: background 0.3s ease;
+            border-radius: 18px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
         }
-
-        .main-profit { text-align: center; margin-bottom: 20px; }
-        .main-profit span { font-size: 14px; color: #94a3b8; }
-        .main-profit h2 { font-size: 36px; margin: 5px 0; font-weight: 800; color: #fff; }
+        .main-profit span { font-size: 12px; color: #94a3b8; }
+        .main-profit h2 { font-size: 28px; margin: 5px 0; }
 
         .sub-results {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            display: flex;
+            justify-content: space-between;
             border-top: 1px solid #334155;
-            padding-top: 20px;
+            padding-top: 15px;
+            margin-top: 15px;
         }
+        .sub-item { flex: 1; }
+        .sub-item label { color: #94a3b8; font-size: 10px; }
+        .sub-item div { font-size: 16px; font-weight: bold; }
 
-        .sub-item label { color: #94a3b8; font-size: 11px; margin-bottom: 2px; }
-        .sub-item div { font-size: 18px; font-weight: bold; }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        /* 動きの演出 */
-        .pop { animation: pop 0.3s ease-out; }
-        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>🚢 eBay 利益計算 PRO</h1>
-    <p class="tagline">ドル売上から円の純利益を爆速計算</p>
+    <p class="tagline">ドル売上を爆速で円換算</p>
 
     <div class="exchange-box">
-        <label>現在の為替レート (1ドル)</label>
+        <label>為替レート (1ドル)</label>
         <div>
-            <input type="number" id="rate" value="150" oninput="calc()">
-            <span style="font-weight: bold; color: var(--ebay-blue);">円</span>
+            <input type="number" id="rate" value="150" oninput="calc()"> 円
         </div>
     </div>
 
-    <div class="input-section">
-        <div class="input-row">
-            <div>
-                <label>販売価格 ($)</label>
-                <input type="number" id="usd_price" placeholder="150" oninput="calc()">
-            </div>
-            <div>
-                <label>仕入れ値 (円)</label>
-                <input type="number" id="jpy_cost" placeholder="12000" oninput="calc()">
-            </div>
+    <div class="input-row">
+        <div class="input-group">
+            <label>売価 ($)</label>
+            <input type="number" id="usd_price" placeholder="100" oninput="calc()">
         </div>
+        <div class="input-group">
+            <label>仕入れ (円)</label>
+            <input type="number" id="jpy_cost" placeholder="8000" oninput="calc()">
+        </div>
+    </div>
 
-        <div class="input-row">
-            <div>
-                <label>eBay手数料 (%)</label>
-                <input type="number" id="fee_per" value="15" oninput="calc()">
-            </div>
-            <div>
-                <label>送料・資材 (円)</label>
-                <input type="number" id="shipping" placeholder="3000" oninput="calc()">
-            </div>
+    <div class="input-row">
+        <div class="input-group">
+            <label>eBay手数料 (%)</label>
+            <input type="number" id="fee_per" value="15" oninput="calc()">
         </div>
+        <div class="input-group">
+            <label>送料 (円)</label>
+            <input type="number" id="shipping" placeholder="3000" oninput="calc()">
+        </div>
+    </div>
 
-        <div>
-            <label>その他経費 (円)</label>
-            <input type="number" id="other" placeholder="0" oninput="calc()">
-        </div>
+    <div class="input-group" style="margin-top: 12px;">
+        <label>その他経費 (円)</label>
+        <input type="number" id="other" placeholder="0" oninput="calc()">
     </div>
 
     <div class="result-panel" id="res_panel">
         <div class="main-profit">
-            <span>純利益（日本円手残り）</span>
+            <span>純利益（日本円）</span>
             <h2 id="profit_jpy">¥0</h2>
         </div>
-        
         <div class="sub-results">
             <div class="sub-item">
-                <label>売上高（円換算）</label>
+                <label>売上高</label>
                 <div id="sales_jpy">¥0</div>
             </div>
             <div class="sub-item">
                 <label>利益率</label>
-                <div id="margin">0.0%</div>
+                <div id="margin">0%</div>
             </div>
         </div>
     </div>
 
-    <div class="footer">
-        © 2026 eBay Profit Tracker | あなたの副業を最強に。
-    </div>
+    <div class="footer">© 2026 eBay Profit Tracker</div>
 </div>
 
 <script>
     function calc() {
-        // 入力値の取得
-        const rate = parseFloat(document.getElementById('rate').value) || 1;
+        const rate = parseFloat(document.getElementById('rate').value) || 0;
         const usd = parseFloat(document.getElementById('usd_price').value) || 0;
         const cost = parseFloat(document.getElementById('jpy_cost').value) || 0;
         const feePer = parseFloat(document.getElementById('fee_per').value) || 0;
         const ship = parseFloat(document.getElementById('shipping').value) || 0;
         const other = parseFloat(document.getElementById('other').value) || 0;
 
-        // 計算ロジック
-        const salesJpy = usd * rate; // 円換算売上
-        const ebayFee = salesJpy * (feePer / 100); // 手数料
-        const totalCost = cost + ebayFee + ship + other; // 総コスト
-        const profit = salesJpy - totalCost; // 純利益
+        const salesJpy = usd * rate;
+        const ebayFee = salesJpy * (feePer / 100);
+        const profit = salesJpy - cost - ebayFee - ship - other;
         const margin = salesJpy > 0 ? (profit / salesJpy) * 100 : 0;
 
-        // 画面への反映
-        updateText('sales_jpy', "¥" + Math.floor(salesJpy).toLocaleString());
-        updateText('profit_jpy', "¥" + Math.floor(profit).toLocaleString());
-        updateText('margin', margin.toFixed(1) + "%");
+        document.getElementById('sales_jpy').innerText = "¥" + Math.floor(salesJpy).toLocaleString();
+        document.getElementById('profit_jpy').innerText = "¥" + Math.floor(profit).toLocaleString();
+        document.getElementById('margin').innerText = margin.toFixed(1) + "%";
 
-        // 赤字ならパネルの色を変える
-        const panel = document.getElementById('res_panel');
-        if (profit < 0) {
-            panel.style.background = "#e53238"; // eBay Red
-        } else {
-            panel.style.background = "#1e293b"; // Dark Slate
-        }
-    }
-
-    function updateText(id, val) {
-        const el = document.getElementById(id);
-        if (el.innerText !== val) {
-            el.innerText = val;
-            el.classList.remove('pop');
-            void el.offsetWidth; // アニメーションリセット
-            el.classList.add('pop');
-        }
+        document.getElementById('res_panel').style.background = profit < 0 ? "#e53238" : "#1e293b";
     }
 </script>
 
