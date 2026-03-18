@@ -3,247 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>eBay Profit Manager Pro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>Profit Manager - Lite</title>
   <style>
-    :root {
-      --bg:        #f9f7f2;
-      --bg2:       #f3efe8;
-      --surface:   #ffffff;
-      --border:    #e8e4dc;
-      --border-f:  #d4cfc5;
-      --ink:       #1a1714;
-      --ink2:      #5c5248;
-      --ink3:      #9c9080;
-      --terra:     #c0593a;
-      --terra-h:   #a8492e;
-      --terra-l:   #f7ede8;
-      --green:     #2a7048;
-      --green-l:   #eaf3ee;
-      --red:       #b03838;
-      --red-l:     #faeaea;
-      --r:         14px;
-      --r-sm:      9px;
-      --r-xs:      6px;
+    /* Claude-inspired Design Tokens */
+    :root { 
+      --bg: #f9f7f2; /* Claude特有の暖かいオフホワイト */
+      --card: #ffffff;
+      --text-main: #333333;
+      --text-sub: #6e6e73;
+      --accent: #d97757; /* 落ち着いたオレンジ */
+      --accent-soft: #fdf2ed;
+      --main: #4a4a4a;
+      --green: #2c7a7b;
+      --red: #c53030;
+      --shadow: 0 4px 20px rgba(0,0,0,0.06);
     }
+    
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-    body {
-      margin: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 400;
-      background: var(--bg);
-      color: var(--ink);
-      overflow-x: hidden;
-      min-height: 100dvh;
-      -webkit-font-smoothing: antialiased;
-    }
+    body { margin: 0; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; background: var(--bg); color: var(--text-main); line-height: 1.6; }
+    
+    .header { background: var(--card); color: var(--text-main); padding: 16px; text-align: center; font-weight: 600; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; font-size: 16px; letter-spacing: 0.5px; }
+    
+    .tabs { display: flex; background: var(--card); padding: 4px; border-bottom: 1px solid #eee; }
+    .tab { flex: 1; padding: 10px; text-align: center; color: var(--text-sub); cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.2s; border-radius: 8px; }
+    .tab.active { color: var(--accent); background: var(--accent-soft); }
 
-    /* Header */
-    .header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 15px 22px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--terra); }
-    .header-wordmark { font-size: 15px; font-weight: 500; color: var(--ink); letter-spacing: -0.02em; }
-    .header-sep { width: 1px; height: 14px; background: var(--border); }
-    .header-sub { font-size: 12px; color: var(--ink3); }
-
-    /* Tabs */
-    .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; }
-    .tab {
-      padding: 11px 14px 9px; color: var(--ink3); cursor: pointer;
-      font-size: 13px; font-weight: 400; letter-spacing: 0.005em;
-      border-bottom: 1.5px solid transparent; margin-bottom: -1px;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    .tab.active { color: var(--terra); border-bottom-color: var(--terra); font-weight: 500; }
-
-    /* Layout */
-    .container { width: 100%; max-width: 480px; margin: 0 auto; padding: 24px 18px 52px; }
+    .container { width: 100%; max-width: 480px; margin: 0 auto; padding: 12px; }
     .page { display: none; }
-    .page.active { display: block; }
+    .page.active { display: block; animation: fadeIn 0.4s ease; }
 
-    /* Cards */
-    .card { background: var(--surface); border-radius: var(--r); padding: 24px; border: 1px solid var(--border); margin-bottom: 12px; }
-    .card-label {
-      font-size: 10px; font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase;
-      color: var(--ink3); margin: 0 0 20px; display: flex; align-items: center; gap: 7px;
-    }
-    .card-label svg { opacity: 0.45; flex-shrink: 0; }
+    .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.02); }
+    h2 { font-size: 13px; margin: 0 0 12px; color: var(--text-main); font-weight: 600; }
 
-    /* Form */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .field { display: flex; flex-direction: column; }
     .field.full { grid-column: 1 / 3; }
-    label { font-size: 10.5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3); margin-bottom: 7px; }
-    input {
-      padding: 11px 13px;
-      border: 1px solid #e5e5e5;
-      border-radius: var(--r-sm);
-      font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 400;
-      color: var(--ink); background: var(--bg); width: 100%;
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-      -webkit-appearance: none;
-    }
-    input::placeholder { color: var(--ink3); opacity: 0.55; }
-    input:focus { border-color: var(--terra); background: var(--surface); box-shadow: 0 0 0 3px rgba(192,89,58,0.10); }
+    label { font-size: 11px; font-weight: 600; margin-bottom: 6px; color: var(--text-sub); }
+    input { padding: 12px; border: 1px solid #e1e1e1; border-radius: 10px; font-size: 16px; width: 100%; background: #fff; transition: border 0.2s; }
+    input:focus { border-color: var(--accent); }
+    
+    .quick-group { display: flex; gap: 6px; margin-top: 6px; }
+    .q-btn { flex: 1; background: #f5f5f7; border: none; padding: 6px; border-radius: 6px; font-size: 10px; color: #555; font-weight: 500; }
 
-    .field-divider { grid-column: 1/3; border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+    .result-box { background: #fdf2ed; border: 1px solid #f9d8cc; color: var(--text-main); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 12px; }
+    .res-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub); margin-bottom: 4px; }
+    #profit { font-size: 32px; font-weight: 700; margin: 5px 0; color: var(--accent); }
 
-    /* Quick btns */
-    .quick-group { display: flex; gap: 5px; margin-top: 7px; }
-    .q-btn {
-      flex: 1; background: var(--bg2); border: 1px solid var(--border);
-      padding: 7px 4px; border-radius: var(--r-xs);
-      font-size: 10.5px; font-weight: 500; color: var(--ink2);
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-    .q-btn:hover { background: var(--terra-l); border-color: rgba(192,89,58,0.25); color: var(--terra-h); }
+    .btn-toggle { width: 100%; padding: 10px; background: none; border: 1px solid #e1e1e1; border-radius: 10px; font-size: 11px; color: var(--text-sub); margin-top: 8px; cursor: pointer; }
+    #backCalcPanel { display: none; background: #fafafa; border-radius: 12px; padding: 16px; margin-top: 10px; border: 1px solid #eee; }
 
-    /* Back-calc */
-    .btn-toggle {
-      width: 100%; padding: 11px; background: transparent;
-      border: 1px dashed var(--border-f); border-radius: var(--r-sm);
-      font-size: 12px; font-weight: 400; color: var(--ink3); margin-top: 18px;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-    }
-    #backCalcPanel { display: none; background: var(--terra-l); border: 1px solid rgba(192,89,58,0.15); padding: 18px; border-radius: var(--r-sm); margin-top: 10px; }
-    .backcalc-row { display: flex; gap: 8px; margin-top: 8px; }
-    .btn-exec { background: var(--terra); color: #fff; border: none; border-radius: var(--r-sm); padding: 0 18px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+    .sum-item { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid #eee; transition: 0.2s; }
+    .sum-item.active-filter { border-color: var(--accent); background: var(--accent-soft); }
 
-    /* Result box */
-    .result-box {
-      background: var(--ink); color: #fff; border-radius: var(--r);
-      padding: 26px 24px 22px; text-align: center; margin-top: 6px;
-      border: 1px solid rgba(0,0,0,0.08); position: relative; overflow: hidden;
-    }
-    #profit { font-size: 44px; font-weight: 300; letter-spacing: -0.04em; line-height: 1; margin: 0 0 6px; }
-    .profit-positive { color: #6ddbaa; }
-    .profit-negative { color: #ff8c8c; }
+    .bar-bg { background: #eee; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0; }
+    .bar-fill { background: var(--accent); height: 100%; width: 0%; transition: 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
 
-    .btn-save {
-      width: 100%; padding: 14px; background: var(--terra); color: #fff; border: none;
-      border-radius: var(--r-sm); font-weight: 500; font-size: 14px; margin-top: 12px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .btn-reset { width: 100%; background: none; border: none; color: var(--ink3); margin-top: 14px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-save { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s; }
+    .btn-save:hover { opacity: 0.9; }
+    .btn-reset { width: 100%; background: none; border: none; color: #a1a1a6; text-decoration: none; margin-top: 15px; font-size: 11px; cursor: pointer; }
 
-    /* History & Report */
-    .report-hero { background: var(--ink); color: #fff; border-radius: var(--r); padding: 24px; margin-bottom: 12px; }
-    #monthTotal { font-size: 46px; font-weight: 300; margin: 2px 0 14px; }
-    .bar-bg { background: rgba(255,255,255,0.10); height: 3px; border-radius: 2px; }
-    .bar-fill { background: var(--terra); height: 100%; width: 0%; transition: width 0.6s; }
-    .hist-card { background: var(--surface); padding: 14px 16px; border-radius: var(--r-sm); margin-bottom: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .hist-profit.pos { color: var(--green); font-weight: 500; }
-    .hist-profit.neg { color: var(--red); font-weight: 500; }
+    .hist-card { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .hist-del { color: #ccc; background: none; border: none; font-size: 20px; padding: 0 8px; cursor: pointer; }
+    .hist-del:hover { color: var(--red); }
 
-    #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 24px; font-size: 12.5px; display: none; z-index: 1000; }
+    #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 10px 24px; border-radius: 25px; font-size: 12px; display: none; z-index: 1000; animation: slideUp 0.3s; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
   </style>
 </head>
 <body>
 
 <div id="toast"></div>
-
-<div class="header">
-  <div class="logo-dot"></div>
-  <span class="header-wordmark">Profit Manager</span>
-  <div class="header-sep"></div>
-  <span class="header-sub">eBay Export</span>
-</div>
+<div class="header">Profit Manager</div>
 
 <div class="tabs">
-  <div class="tab active" id="tab-calc" onclick="switchTab('calcPage')">利益計算</div>
-  <div class="tab" id="tab-report" onclick="switchTab('reportPage')">集計レポート</div>
+  <div class="tab active" id="tab-calc" onclick="switchTab('calcPage')">Calculator</div>
+  <div class="tab" id="tab-report" onclick="switchTab('reportPage')">Insights</div>
 </div>
 
 <div class="container">
-
   <div id="calcPage" class="page active">
-
     <div class="card">
-      <div class="card-label">商品情報</div>
-      <div class="field">
-        <label>商品メモ</label>
-        <input type="text" id="itemName" placeholder="例：Game Console, Anime Figureなど">
+      <div class="field full">
+        <label>ITEM NAME</label>
+        <input type="text" id="itemName" placeholder="What are you selling?">
       </div>
-    </div>
-
-    <div class="card">
-      <div class="card-label">取引パラメータ</div>
-      <div class="form-grid">
-        <div class="field">
-          <label>為替レート (¥/$)</label>
-          <input type="number" id="rate" value="150">
-        </div>
-        <div class="field">
-          <label>eBay 手数料 (%)</label>
-          <input type="number" id="feePercent" value="15">
-        </div>
-        <hr class="field-divider">
-        <div class="field">
-          <label>売値 (USD)</label>
-          <input type="number" id="saleUsd" placeholder="0.00">
-        </div>
-        <div class="field">
-          <label>仕入れ値 (円)</label>
-          <input type="number" id="cost" placeholder="0">
-        </div>
-        <div class="field">
-          <label>送料 (USD) ※ドル入力</label>
-          <input type="number" id="shippingUsd" placeholder="0.00">
+      <div class="form-grid" style="margin-top:15px;">
+        <div class="field"><label>RATE (¥/$)</label><input type="number" id="rate" value="150"></div>
+        <div class="field"><label>FEE (%)</label><input type="number" id="feePercent" value="15"></div>
+        <div class="field"><label>SALE (USD)</label><input type="number" id="saleUsd" placeholder="0"></div>
+        <div class="field"><label>COST (JPY)</label><input type="number" id="cost" placeholder="0"></div>
+        <div class="field full">
+          <label>SHIPPING (JPY)</label>
+          <input type="number" id="shipping" placeholder="0">
           <div class="quick-group">
-            <button class="q-btn" onclick="setShippingUsd(20)">FedEx $20</button>
-            <button class="q-btn" onclick="setShippingUsd(35)">EMS $35</button>
+            <button class="q-btn" onclick="setShipping(3000)">FedEx (¥3k)</button>
+            <button class="q-btn" onclick="setShipping(5000)">EMS (¥5k)</button>
           </div>
         </div>
-        <div class="field">
-          <label>その他費用 (円)</label>
-          <input type="number" id="other" value="0">
-        </div>
+        <div class="field full"><label>OTHERS (JPY)</label><input type="number" id="other" value="0"></div>
       </div>
 
-      <button class="btn-toggle" onclick="toggleBackCalc()">逆算モード — 希望利益(円)から売値を出す</button>
+      <button class="btn-toggle" onclick="toggleBackCalc()">Reverse Search</button>
       <div id="backCalcPanel">
-        <label>希望の純利益 (円)</label>
-        <div class="backcalc-row">
-          <input type="number" id="targetProfit" value="3000">
-          <button class="btn-exec" onclick="calcBack()">計算</button>
+        <label>TARGET PROFIT (JPY)</label>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <input type="number" id="targetProfit" value="3000" style="flex:1;">
+          <button onclick="calcBack()" style="background:var(--main); color:#fff; border:none; border-radius:10px; padding:0 15px;">Calc</button>
         </div>
       </div>
     </div>
 
     <div class="result-box">
+      <div class="res-row"><span>Revenue: <span id="salesJpy">¥0</span></span><span>Fees: <span id="feeJpy">¥0</span></span></div>
       <div id="profit">¥0</div>
-      <div style="font-size:12px; opacity:0.6;">利益率: <span id="profitRate">0%</span></div>
+      <div style="font-size:11px; opacity: 0.7;">Margin: <span id="profitRate">0%</span></div>
     </div>
 
-    <button class="btn-save" onclick="saveRecord()">この利益を記録する</button>
-    <button class="btn-reset" onclick="resetInputs()">リセット</button>
+    <button class="btn-save" onclick="saveRecord()">Save Records</button>
+    <button class="btn-reset" onclick="resetInputs()">Clear inputs</button>
   </div>
 
   <div id="reportPage" class="page">
-    <div class="report-hero">
-      <span style="font-size:10px; opacity:0.5;">累計利益</span>
-      <div id="monthTotal">¥0</div>
+    <div class="card">
+      <h2 style="display:flex; justify-content:space-between; align-items:center;">
+        MONTHLY PROGRESS
+        <button class="q-btn" style="padding: 2px 10px;" onclick="setGoal()">Set Goal</button>
+      </h2>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-sub);">
+        <span id="goalText">Goal: ¥100,000</span>
+        <span id="percentText">0%</span>
+      </div>
       <div class="bar-bg"><div id="goalBar" class="bar-fill"></div></div>
+      <div id="monthTotal" style="font-size:26px; font-weight:700; color:var(--text-main); text-align:center; cursor:pointer; margin-top:10px;" onclick="updateReport('all')">¥0</div>
+      <div style="font-size:10px; text-align:center; color:#999;">Tap total to show all items</div>
+      
+      <div class="sum-grid">
+        <div class="sum-item" id="filter-plus" onclick="updateReport('plus')"><div style="font-size:10px; color:var(--green); font-weight:600;">PROFITS</div><b id="plusCount" style="font-size:18px;">0</b></div>
+        <div class="sum-item" id="filter-minus" onclick="updateReport('minus')"><div style="font-size:10px; color:var(--red); font-weight:600;">LOSSES</div><b id="minusCount" style="font-size:18px;">0</b></div>
+      </div>
     </div>
     <div id="historyList"></div>
+    <button class="btn-reset" style="color:#ff6b6b; width:100%;" onclick="clearAllData()">Delete all history</button>
   </div>
-
 </div>
 
 <script>
-  const ids = ['itemName','rate','feePercent','saleUsd','cost','shippingUsd','other'];
+  // Logic remains robust (Same as previous, refined for UI)
+  const ids = ['itemName', 'rate', 'feePercent', 'saleUsd', 'cost', 'shipping', 'other'];
   const inputs = {};
   ids.forEach(id => inputs[id] = document.getElementById(id));
 
@@ -258,84 +167,117 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(pId).classList.add('active');
     document.getElementById(pId === 'calcPage' ? 'tab-calc' : 'tab-report').classList.add('active');
-    if (pId === 'reportPage') updateReport();
+    if(pId === 'reportPage') updateReport('all');
   }
 
-  function setShippingUsd(v) { inputs.shippingUsd.value = v; calc(); }
-
-  function toggleBackCalc() {
+  function setShipping(v) { inputs.shipping.value = v; calc(); }
+  function toggleBackCalc() { 
     const p = document.getElementById('backCalcPanel');
     p.style.display = p.style.display === 'block' ? 'none' : 'block';
   }
 
   function calc() {
-    const val = id => parseFloat(inputs[id].value) || 0;
-    const rate = val('rate');
-    const feeP = val('feePercent') / 100;
-    
-    const saleJpy = val('saleUsd') * rate;
-    const shipJpy = val('shippingUsd') * rate;
-    const feeJpy = saleJpy * feeP;
-    
-    const profit = saleJpy - (val('cost') + shipJpy + val('other') + feeJpy);
-    const pRate = saleJpy > 0 ? (profit / saleJpy) * 100 : 0;
+    const val = (id) => parseFloat(inputs[id].value) || 0;
+    localStorage.setItem('cfg_rate', inputs.rate.value);
+    localStorage.setItem('cfg_fee', inputs.feePercent.value);
 
+    const sJpy = Math.round(val('saleUsd') * val('rate'));
+    const fJpy = Math.round(sJpy * (val('feePercent') / 100));
+    const profit = sJpy - (val('cost') + val('shipping') + val('other') + fJpy);
+    const pRate = sJpy > 0 ? (profit / sJpy) * 100 : 0;
+
+    document.getElementById('salesJpy').textContent = '¥' + sJpy.toLocaleString();
+    document.getElementById('feeJpy').textContent = '¥' + fJpy.toLocaleString();
     const pEl = document.getElementById('profit');
-    pEl.textContent = (profit >= 0 ? '¥' : '-¥') + Math.abs(Math.round(profit)).toLocaleString();
-    pEl.className = profit >= 0 ? 'profit-positive' : 'profit-negative';
+    pEl.textContent = (profit >= 0 ? '¥' : '-¥') + Math.abs(profit).toLocaleString();
+    pEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
     document.getElementById('profitRate').textContent = pRate.toFixed(1) + '%';
   }
   ids.forEach(id => inputs[id].addEventListener('input', calc));
 
   function calcBack() {
     const target = parseFloat(document.getElementById('targetProfit').value) || 0;
-    const val = id => parseFloat(inputs[id].value) || 0;
-    const rate = val('rate'), fP = val('feePercent') / 100;
-    if (rate <= 0) return;
-    
-    // 逆算ロジック: 売値USD = (希望利益 + 仕入れ円 + その他円) / (レート * (1 - 手数料)) + 送料USD
-    const neededusd = (target + val('cost') + val('other')) / (rate * (1 - fP)) + val('shippingUsd');
-    inputs.saleUsd.value = Math.ceil(neededusd);
+    const val = (id) => parseFloat(inputs[id].value) || 0;
+    const rate = val('rate');
+    const fP = val('feePercent') / 100;
+    if(rate <= 0) return;
+    const res = (target + val('cost') + val('shipping') + val('other')) / (rate * (1 - fP));
+    inputs.saleUsd.value = Math.ceil(res);
     calc();
-    showToast('売値を更新しました');
+    showToast('Suggested price applied');
   }
 
   function saveRecord() {
-    if (!inputs.saleUsd.value) return showToast('値を入力してください');
-    calc();
-    const pText = document.getElementById('profit').textContent;
-    const profit = parseInt(pText.replace(/[¥,]/g, '')) * (pText.startsWith('-') ? -1 : 1);
-    const record = { id: Date.now(), name: inputs.itemName.value || 'No Title', sale: inputs.saleUsd.value, profit };
+    if(!inputs.saleUsd.value) return showToast('Enter values first');
+    const profitText = document.getElementById('profit').textContent.replace(/[¥,]/g, '').replace('-', '');
+    const profit = parseInt(profitText) * (document.getElementById('profit').textContent.includes('-') ? -1 : 1);
+    const record = { id: Date.now(), name: inputs.itemName.value || 'Untitled', sale: inputs.saleUsd.value, profit: profit, date: new Date().toISOString() };
     let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
     data.unshift(record);
     localStorage.setItem('ebay_pro_data', JSON.stringify(data));
-    showToast('保存しました');
+    showToast('Record saved successfully');
+    updateReport();
   }
 
-  function updateReport() {
+  function updateReport(filter = 'all') {
     const data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
-    let total = 0;
-    const list = document.getElementById('historyList');
-    list.innerHTML = '';
+    const goal = parseInt(localStorage.getItem('cfg_goal') || 100000);
+    let mSum = 0, pCount = 0, mCount = 0;
+    const listEl = document.getElementById('historyList');
+    listEl.innerHTML = '';
+
+    document.getElementById('filter-plus').classList.remove('active-filter');
+    document.getElementById('filter-minus').classList.remove('active-filter');
+    if(filter === 'plus') document.getElementById('filter-plus').classList.add('active-filter');
+    if(filter === 'minus') document.getElementById('filter-minus').classList.add('active-filter');
+
     data.forEach(item => {
-      total += item.profit;
-      const div = document.createElement('div');
-      div.className = 'hist-card';
-      div.innerHTML = `<div>${item.name}<br><small>$${item.sale}</small></div><div class="hist-profit ${item.profit>=0?'pos':'neg'}">¥${item.profit.toLocaleString()}</div>`;
-      list.appendChild(div);
+      mSum += item.profit;
+      if(item.profit >= 0) pCount++; else mCount++;
+      let show = (filter === 'all') || (filter === 'plus' && item.profit >= 0) || (filter === 'minus' && item.profit < 0);
+      if(show) {
+        const div = document.createElement('div');
+        div.className = 'hist-card';
+        div.innerHTML = `<div><b style="font-size:13px;">${item.name}</b><br><small style="color:#999;">$${item.sale} · ${new Date(item.date).toLocaleDateString()}</small></div>
+                         <div style="display:flex;align-items:center;"><b style="color:${item.profit>=0?'var(--green)':'var(--red)'}; font-size:14px;">¥${item.profit.toLocaleString()}</b>
+                         <button class="hist-del" onclick="deleteItem(${item.id})">×</button></div>`;
+        listEl.appendChild(div);
+      }
     });
-    document.getElementById('monthTotal').textContent = '¥' + total.toLocaleString();
+    document.getElementById('monthTotal').textContent = '¥' + mSum.toLocaleString();
+    document.getElementById('plusCount').textContent = pCount;
+    document.getElementById('minusCount').textContent = mCount;
+    document.getElementById('goalText').textContent = 'Goal: ¥' + goal.toLocaleString();
+    const per = Math.min(100, Math.max(0, Math.round((mSum / goal) * 100)));
+    document.getElementById('goalBar').style.width = per + '%';
+    document.getElementById('percentText').textContent = per + '%';
+  }
+
+  function deleteItem(id) {
+    if(!confirm('Delete this record?')) return;
+    let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
+    data = data.filter(i => i.id !== id);
+    localStorage.setItem('ebay_pro_data', JSON.stringify(data));
+    updateReport();
+  }
+
+  function setGoal() {
+    const g = prompt('Monthly Profit Goal (JPY)', '100000');
+    if(g) { localStorage.setItem('cfg_goal', g); updateReport(); }
   }
 
   function resetInputs() {
-    ['itemName','saleUsd','cost','shippingUsd','other'].forEach(id => inputs[id].value = (id==='other'?0:''));
+    if(!confirm('Clear all inputs?')) return;
+    ['itemName', 'saleUsd', 'cost', 'shipping', 'other'].forEach(id => inputs[id].value = (id==='other' ? 0 : ''));
     calc();
   }
+
+  function clearAllData() { if(confirm('WIPE ALL DATA?')) { localStorage.removeItem('ebay_pro_data'); updateReport(); } }
 
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 2000);
+    setTimeout(() => t.style.display = 'none', 2500);
   }
 </script>
 </body>
