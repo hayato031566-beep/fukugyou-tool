@@ -86,4 +86,217 @@
         <div class="field"><label>為替レート (¥/$)</label><input type="number" id="rate" value="150" step="0.1"></div>
         <div class="field"><label>eBay手数料 (%)</label><input type="number" id="feePercent" value="15" step="0.1"></div>
         <div class="field"><label>売値 (USD)</label><input type="number" id="saleUsd" placeholder="0"></div>
-        <div class="field"><label>仕入れ (円)</label><input type="number" id="
+        <div class="field"><label>仕入れ (円)</label><input type="number" id="cost" placeholder="0"></div>
+        <div class="field">
+          <label>送料 (円)</label>
+          <input type="number" id="shipping" placeholder="0">
+          <div class="quick-group">
+            <button class="q-btn" onclick="setShipping(3000)">FedEx</button>
+            <button class="q-btn" onclick="setShipping(5000)">EMS</button>
+          </div>
+        </div>
+        <div class="field"><label>その他経費 (円)</label><input type="number" id="other" value="0"></div>
+      </div>
+
+      <button class="btn-toggle" onclick="toggleBackCalc()">▼ 利益から売値を逆算する (ON/OFF)</button>
+      <div id="backCalcPanel">
+        <label>手元にいくら残したい？ (日本円)</label>
+        <div style="display:flex; gap:10px; margin-top:5px;">
+          <input type="number" id="targetProfit" value="3000" style="flex:1;">
+          <button onclick="calcBack()" style="background:var(--main); color:#fff; border:none; border-radius:8px; padding:0 15px; font-weight:bold;">逆算実行</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-box">
+      <div class="res-row"><span>売上: <span id="salesJpy">¥0</span></span><span>手数料: <span id="feeJpy">¥0</span></span></div>
+      <div id="profit">¥0</div>
+      <div class="res-footer">利益率: <span id="profitRate">0%</span></div>
+    </div>
+
+    <button class="btn-save" onclick="saveRecord()">この計算結果を保存する</button>
+    <button class="btn-reset" onclick="resetInputs()">入力のみリセット</button>
+  </div>
+
+  <div id="reportPage" class="page">
+    <div class="card">
+      <h2>📈 今月の目標達成度 <button class="q-btn" onclick="setGoal()">目標設定</button></h2>
+      <div class="progress-wrap">
+        <div style="display:flex; justify-content:space-between; font-size:12px;">
+          <span id="goalText">目標: ¥100,000</span>
+          <span id="percentText">0%</span>
+        </div>
+        <div class="bar-bg"><div id="goalBar" class="bar-fill"></div></div>
+        <div id="monthTotal" style="font-size:24px; font-weight:bold; color:var(--main); text-align:center;">¥0</div>
+      </div>
+      
+      <div class="summary-grid">
+        <div class="sum-item"><div style="font-size:10px; color:var(--green);">黒字件数</div><b id="plusCount">0</b></div>
+        <div class="sum-item"><div style="font-size:10px; color:var(--red);">赤字件数</div><b id="minusCount">0</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📜 直近の履歴</h2>
+      <div id="historyList"></div>
+      <button class="btn-reset" style="color:var(--red);" onclick="clearAllData()">全履歴を削除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- 初期設定 & 要素取得 ---
+  const fields = ['itemName', 'rate', 'feePercent', 'saleUsd', 'cost', 'shipping', 'other'];
+  const inputs = {};
+  fields.forEach(id => inputs[id] = document.getElementById(id));
+
+  // ローカルストレージから設定復元
+  window.onload = () => {
+    inputs.rate.value = localStorage.getItem('cfg_rate') || 150;
+    inputs.feePercent.value = localStorage.getItem('cfg_fee') || 15;
+    updateReport();
+  };
+
+  function switchTab(pId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(pId).classList.add('active');
+    document.getElementById(pId === 'calcPage' ? 'tab-calc' : 'tab-report').classList.add('active');
+    if(pId === 'reportPage') updateReport();
+  }
+
+  function setShipping(v) { inputs.shipping.value = v; calc(); }
+  function toggleBackCalc() { 
+    const p = document.getElementById('backCalcPanel');
+    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+  }
+
+  // --- 計算ロジック ---
+  function calc() {
+    const val = (id) => parseFloat(inputs[id].value) || 0;
+    
+    // 設定を保存
+    localStorage.setItem('cfg_rate', inputs.rate.value);
+    localStorage.setItem('cfg_fee', inputs.feePercent.value);
+
+    const sJpy = Math.round(val('saleUsd') * val('rate'));
+    const fJpy = Math.round(sJpy * (val('feePercent') / 100));
+    const totalExp = val('cost') + val('shipping') + val('other') + fJpy;
+    const profit = sJpy - totalExp;
+    const rate = sJpy > 0 ? (profit / sJpy) * 100 : 0;
+
+    document.getElementById('salesJpy').textContent = '¥' + sJpy.toLocaleString();
+    document.getElementById('feeJpy').textContent = '¥' + fJpy.toLocaleString();
+    const pEl = document.getElementById('profit');
+    pEl.textContent = (profit >= 0 ? '¥' : '-¥') + Math.abs(profit).toLocaleString();
+    pEl.style.color = profit >= 0 ? '#4ade80' : '#ff6b6b';
+    document.getElementById('profitRate').textContent = rate.toFixed(1) + '%';
+  }
+  fields.forEach(id => inputs[id].addEventListener('input', calc));
+
+  // 逆算機能
+  function calcBack() {
+    const target = parseFloat(document.getElementById('targetProfit').value) || 0;
+    const val = (id) => parseFloat(inputs[id].value) || 0;
+    const rate = val('rate');
+    const fP = val('feePercent') / 100;
+    
+    if(rate <= 0) return;
+    // 公式: (利益 + 仕入 + 送料 + 他) / (レート * (1 - 手数料率))
+    const res = (target + val('cost') + val('shipping') + val('other')) / (rate * (1 - fP));
+    inputs.saleUsd.value = Math.ceil(res);
+    calc();
+    showToast('売値を自動設定しました');
+  }
+
+  // --- 保存 & 履歴管理 ---
+  function saveRecord() {
+    if(!inputs.saleUsd.value) return showToast('売値を入力してください');
+    
+    const profit = parseInt(document.getElementById('profit').textContent.replace(/[¥,]/g, '').replace('-', '')) * (document.getElementById('profit').textContent.includes('-') ? -1 : 1);
+    const record = {
+      id: Date.now(),
+      name: inputs.itemName.value || '無題の商品',
+      sale: inputs.saleUsd.value,
+      profit: profit,
+      date: new Date().toISOString()
+    };
+
+    let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
+    data.unshift(record);
+    localStorage.setItem('ebay_pro_data', JSON.stringify(data));
+    showToast('保存完了！');
+  }
+
+  function updateReport() {
+    const data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
+    const goal = parseInt(localStorage.getItem('cfg_goal') || 100000);
+    let mSum = 0, pCount = 0, mCount = 0;
+    
+    const listEl = document.getElementById('historyList');
+    listEl.innerHTML = '';
+
+    data.forEach(item => {
+      mSum += item.profit;
+      if(item.profit >= 0) pCount++; else mCount++;
+
+      const div = document.createElement('div');
+      div.className = 'hist-card';
+      div.innerHTML = `
+        <div style="flex:1">
+          <div style="font-weight:bold; font-size:13px;">${item.name}</div>
+          <div style="font-size:10px; color:#888;">$${item.sale} - ${new Date(item.date).toLocaleDateString()}</div>
+        </div>
+        <div style="color:${item.profit>=0 ? 'var(--green)' : 'var(--red)'}; font-weight:bold; margin-right:10px;">¥${item.profit.toLocaleString()}</div>
+        <button class="hist-del" onclick="deleteItem(${item.id})">×</button>
+      `;
+      listEl.appendChild(div);
+    });
+
+    document.getElementById('monthTotal').textContent = '¥' + mSum.toLocaleString();
+    document.getElementById('plusCount').textContent = pCount;
+    document.getElementById('minusCount').textContent = mCount;
+    document.getElementById('goalText').textContent = '目標: ¥' + goal.toLocaleString();
+    
+    const per = Math.min(100, Math.max(0, Math.round((mSum / goal) * 100)));
+    document.getElementById('goalBar').style.width = per + '%';
+    document.getElementById('percentText').textContent = per + '%';
+  }
+
+  function setGoal() {
+    const g = prompt('今月の目標利益を入力してください (円)', '100000');
+    if(g) {
+      localStorage.setItem('cfg_goal', g);
+      updateReport();
+    }
+  }
+
+  function deleteItem(id) {
+    let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
+    data = data.filter(i => i.id !== id);
+    localStorage.setItem('ebay_pro_data', JSON.stringify(data));
+    updateReport();
+  }
+
+  function resetInputs() {
+    if(confirm('入力をリセットしますか？ (為替と手数料は残ります)')) {
+      ['itemName', 'saleUsd', 'cost', 'shipping', 'other'].forEach(id => inputs[id].value = (id==='other' ? 0 : ''));
+      calc();
+    }
+  }
+
+  function clearAllData() {
+    if(confirm('すべての履歴を削除しますか？')) {
+      localStorage.removeItem('ebay_pro_data');
+      updateReport();
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
+  }
+</script>
+</body>
+</html>
