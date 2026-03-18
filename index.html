@@ -1,280 +1,325 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" /><meta name="description" content="副業の利益を簡単に計算できる無料ツール。仕入れ・手数料・送料を入力するだけで利益と利益率を自動で表示します。">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>副業 利益計算ツール｜無料で使える簡単シミュレーター</title>
+  <title>eBay利益計算ツール｜売値・送料・手数料・為替を自動計算</title>
+  <meta name="description" content="eBay販売の利益を簡単に計算できる無料ツールです。売値・仕入れ・送料・eBay手数料・為替レートを入力するだけで、利益と利益率を自動で表示します。" />
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      <p>副業の利益を簡単に計算できる無料ツールです。仕入れ・手数料・送料を入力するだけで、利益と利益率を自動で表示します。</p>
       margin: 0;
-      font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
       background: #f5f7fb;
       color: #222;
       line-height: 1.6;
     }
+
     .wrap {
       max-width: 720px;
-      margin: 40px auto;
-      padding: 20px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
     }
+
     .card {
       background: #fff;
       border-radius: 16px;
-      padding: 24px;
+      padding: 20px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
+
     h1 {
-      margin: 0 0 8px;
       font-size: 28px;
+      line-height: 1.4;
+      margin: 0 0 12px;
+      color: #111;
     }
-    .desc {
-      margin: 0 0 24px;
-      color: #666;
-      font-size: 14px;
+
+    p {
+      margin: 0 0 12px;
+      color: #444;
     }
-    .grid {
+
+    .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 14px;
+      margin-top: 24px;
     }
+
     .field {
       display: flex;
       flex-direction: column;
-      gap: 8px;
     }
+
     .field.full {
       grid-column: 1 / -1;
     }
+
     label {
       font-weight: 700;
+      margin-bottom: 6px;
       font-size: 14px;
+      color: #222;
     }
+
     input {
       width: 100%;
-      padding: 12px 14px;
+      padding: 14px 12px;
       border: 1px solid #d7dce5;
       border-radius: 10px;
       font-size: 16px;
+      background: #fff;
+      color: #222;
     }
+
     input:focus {
       outline: none;
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     }
-    .buttons {
-      display: flex;
-      gap: 12px;
+
+    .result-box {
       margin-top: 24px;
-      flex-wrap: wrap;
-    }
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 18px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .primary {
-      background: #4f46e5;
-      color: #fff;
-    }
-    .secondary {
-      background: #eef2ff;
-      color: #333;
-    }
-    .result {
-      margin-top: 28px;
-      background: #f8fafc;
+      padding: 18px;
       border-radius: 14px;
-      padding: 20px;
+      background: #f8fafc;
       border: 1px solid #e5e7eb;
     }
-    .result h2 {
-      margin: 0 0 14px;
-      font-size: 20px;
-    }
+
     .result-list {
       display: grid;
       gap: 12px;
     }
-    .item {
+
+    .result-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 14px;
-      background: #fff;
-      border-radius: 10px;
-      border: 1px solid #eceff4;
-      gap: 16px;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
     }
-    .item span:first-child {
-      color: #555;
+
+    .result-item:last-child {
+      border-bottom: none;
     }
-    .item strong {
+
+    .result-label {
+      font-weight: 700;
+      color: #333;
+    }
+
+    .result-value {
+      font-weight: 700;
       font-size: 18px;
+      text-align: right;
     }
-    .profit-plus strong {
+
+    .profit-plus {
       color: #16a34a;
     }
-    .profit-minus strong {
+
+    .profit-minus {
       color: #dc2626;
     }
+
     .note {
-      margin-top: 16px;
+      margin-top: 14px;
       font-size: 13px;
       color: #666;
     }
+
     @media (max-width: 640px) {
-      .wrap { margin: 20px auto; padding: 14px; }
-      .card { padding: 18px; }
-      .grid { grid-template-columns: 1fr; }
-      h1 { font-size: 24px; }
-      .item { flex-direction: column; align-items: flex-start; }
+      .wrap {
+        padding: 16px 12px 32px;
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-item {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .result-value {
+        text-align: left;
+        font-size: 17px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>副業利益計算ツール</h1>
-      <p class="desc">売上・原価・手数料・送料・広告費などを入力すると、利益と利益率を自動で計算できます。</p>
+      <h1>eBay利益計算ツール</h1>
+      <p>eBay販売の利益を簡単に計算できる無料ツールです。売値・仕入れ・送料・eBay手数料・為替レートを入力するだけで、利益と利益率を自動で表示します。</p>
+      <p>物販・せどり・転売などの副業に対応しており、初心者でも使いやすいシンプル設計になっています。</p>
 
-      <div class="grid">
+      <div class="form-grid">
         <div class="field">
-          <label for="sales">売上金額（円）</label>
-          <input type="number" id="sales" placeholder="例：50000" min="0" />
+          <label for="saleUsd">売値（USD）</label>
+          <input type="number" id="saleUsd" placeholder="例：120" step="0.01" />
         </div>
 
         <div class="field">
-          <label for="cost">仕入れ・原価（円）</label>
-          <input type="number" id="cost" placeholder="例：20000" min="0" />
+          <label for="rate">為替レート（1USD=円）</label>
+          <input type="number" id="rate" placeholder="例：150" step="0.01" />
         </div>
 
         <div class="field">
-          <label for="fee">販売手数料（円）</label>
-          <input type="number" id="fee" placeholder="例：5000" min="0" />
+          <label for="cost">仕入れ値（円）</label>
+          <input type="number" id="cost" placeholder="例：5000" step="0.01" />
+        </div>
+
+        <div class="field">
+          <label for="ebayFee">eBay手数料（円）</label>
+          <input type="number" id="ebayFee" placeholder="例：1800" step="0.01" />
         </div>
 
         <div class="field">
           <label for="shipping">送料（円）</label>
-          <input type="number" id="shipping" placeholder="例：1200" min="0" />
+          <input type="number" id="shipping" placeholder="例：2500" step="0.01" />
         </div>
 
         <div class="field">
-          <label for="ad">広告費（円）</label>
-          <input type="number" id="ad" placeholder="例：3000" min="0" />
-        </div>
-
-        <div class="field">
-          <label for="other">その他経費（円）</label>
-          <input type="number" id="other" placeholder="例：800" min="0" />
-        </div>
-
-        <div class="field full">
-          <label for="monthlySales">月間販売数（個・件）</label>
-          <input type="number" id="monthlySales" placeholder="例：30" min="0" />
+          <label for="otherCost">その他経費（円）</label>
+          <input type="number" id="otherCost" placeholder="例：500" step="0.01" />
         </div>
       </div>
 
-      <div class="buttons">
-        <button class="primary" id="calcBtn">計算する</button>
-        <button class="secondary" id="resetBtn">リセット</button>
-      </div>
-
-      <div class="result" id="result">
-        <h2>計算結果</h2>
+      <div class="result-box">
         <div class="result-list">
-          <div class="item">
-            <span>1件あたりの利益</span>
-            <strong id="profitPerItem">0円</strong>
+          <div class="result-item">
+            <div class="result-label">円換算売上</div>
+            <div class="result-value" id="salesJpy">0円</div>
           </div>
-          <div class="item">
-            <span>利益率</span>
-            <strong id="profitRate">0%</strong>
+
+          <div class="result-item">
+            <div class="result-label">総経費</div>
+            <div class="result-value" id="totalCost">0円</div>
           </div>
-          <div class="item">
-            <span>総経費</span>
-            <strong id="totalExpense">0円</strong>
+
+          <div class="result-item">
+            <div class="result-label">利益</div>
+            <div class="result-value" id="profit">0円</div>
           </div>
-          <div class="item">
-            <span>月間予想利益</span>
-            <strong id="monthlyProfit">0円</strong>
+
+          <div class="result-item">
+            <div class="result-label">利益率（％）</div>
+            <div class="result-value" id="profitRate">0%</div>
           </div>
         </div>
-        <p class="note">※ 税金は含めていません。必要なら別で管理してください。</p>
       </div>
+
+      <p class="note">※ 入力すると自動で計算されます。</p>
+      <div class="card" style="margin-top:20px;">
+  <h2>使い方</h2>
+  <ul>
+    <li>売値（USD）を入力</li>
+    <li>為替レートを入力</li>
+    <li>仕入れ値・送料・手数料を入力</li>
+    <li>利益と利益率を確認</li>
+  </ul>
+
+  <h2>こんな人におすすめ</h2>
+  <ul>
+    <li>eBay初心者</li>
+    <li>出品前に利益を確認したい人</li>
+    <li>仕入れ判断を早くしたい人</li>
+  </ul>
+
+  <h2>注意点</h2>
+  <ul>
+    <li>為替レートは日々変動します</li>
+    <li>eBay手数料は条件によって変わる場合があります</li>
+    <li>送料は配送方法によって異なります</li>
+  </ul>
+</div>
     </div>
   </div>
 
   <script>
-    const salesInput = document.getElementById('sales');
-    const costInput = document.getElementById('cost');
-    const feeInput = document.getElementById('fee');
-    const shippingInput = document.getElementById('shipping');
-    const adInput = document.getElementById('ad');
-    const otherInput = document.getElementById('other');
-    const monthlySalesInput = document.getElementById('monthlySales');
+    const saleUsd = document.getElementById('saleUsd');
+    const rate = document.getElementById('rate');
+    const cost = document.getElementById('cost');
+    const ebayFee = document.getElementById('ebayFee');
+    const shipping = document.getElementById('shipping');
+    const otherCost = document.getElementById('otherCost');
 
-    const profitPerItemEl = document.getElementById('profitPerItem');
+    const salesJpyEl = document.getElementById('salesJpy');
+    const totalCostEl = document.getElementById('totalCost');
+    const profitEl = document.getElementById('profit');
     const profitRateEl = document.getElementById('profitRate');
-    const totalExpenseEl = document.getElementById('totalExpense');
-    const monthlyProfitEl = document.getElementById('monthlyProfit');
-    const resultBox = document.getElementById('result');
 
-    const calcBtn = document.getElementById('calcBtn');
-    const resetBtn = document.getElementById('resetBtn');
+    const inputs = [saleUsd, rate, cost, ebayFee, shipping, otherCost];
 
-    function getValue(input) {
-      return Number(input.value) || 0;
+    function getNumber(value) {
+      const num = parseFloat(value);
+      return isNaN(num) ? 0 : num;
     }
 
     function formatYen(value) {
-      return value.toLocaleString('ja-JP') + '円';
+      return Math.round(value).toLocaleString('ja-JP') + '円';
     }
 
-    function calculateProfit() {
-      const sales = getValue(salesInput);
-      const cost = getValue(costInput);
-      const fee = getValue(feeInput);
-      const shipping = getValue(shippingInput);
-      const ad = getValue(adInput);
-      const other = getValue(otherInput);
-      const monthlySales = getValue(monthlySalesInput);
-
-      const totalExpense = cost + fee + shipping + ad + other;
-      const profitPerItem = sales - totalExpense;
-      const profitRate = sales > 0 ? (profitPerItem / sales) * 100 : 0;
-      const monthlyProfit = profitPerItem * monthlySales;
-
-      profitPerItemEl.textContent = formatYen(profitPerItem);
-      profitRateEl.textContent = profitRate.toFixed(1) + '%';
-      totalExpenseEl.textContent = formatYen(totalExpense);
-      monthlyProfitEl.textContent = formatYen(monthlyProfit);
-
-      resultBox.classList.remove('profit-plus', 'profit-minus');
-      resultBox.classList.add(profitPerItem >= 0 ? 'profit-plus' : 'profit-minus');
+    function formatPercent(value) {
+      return value.toFixed(1) + '%';
     }
 
-    function resetForm() {
-      [salesInput, costInput, feeInput, shippingInput, adInput, otherInput, monthlySalesInput].forEach(input => {
-        input.value = '';
-      });
-      profitPerItemEl.textContent = '0円';
-      profitRateEl.textContent = '0%';
-      totalExpenseEl.textContent = '0円';
-      monthlyProfitEl.textContent = '0円';
-      resultBox.classList.remove('profit-plus', 'profit-minus');
+    function updateProfitColor(value) {
+      profitEl.classList.remove('profit-plus', 'profit-minus');
+      profitRateEl.classList.remove('profit-plus', 'profit-minus');
+
+      if (value > 0) {
+        profitEl.classList.add('profit-plus');
+        profitRateEl.classList.add('profit-plus');
+      } else if (value < 0) {
+        profitEl.classList.add('profit-minus');
+        profitRateEl.classList.add('profit-minus');
+      }
     }
 
-    calcBtn.addEventListener('click', calculateProfit);
-    resetBtn.addEventListener('click', resetForm);
+    function calculate() {
+      const saleUsdValue = getNumber(saleUsd.value);
+      const rateValue = getNumber(rate.value);
+      const costValue = getNumber(cost.value);
+      const ebayFeeValue = getNumber(ebayFee.value);
+      const shippingValue = getNumber(shipping.value);
+      const otherCostValue = getNumber(otherCost.value);
 
-    [salesInput, costInput, feeInput, shippingInput, adInput, otherInput, monthlySalesInput].forEach(input => {
-      input.addEventListener('input', calculateProfit);
+      const salesJpy = saleUsdValue * rateValue;
+      const totalCost = costValue + ebayFeeValue + shippingValue + otherCostValue;
+      const profit = salesJpy - totalCost;
+      const profitRate = salesJpy > 0 ? (profit / salesJpy) * 100 : 0;
+
+      salesJpyEl.textContent = formatYen(salesJpy);
+      totalCostEl.textContent = formatYen(totalCost);
+      profitEl.textContent = formatYen(profit);
+      profitRateEl.textContent = formatPercent(profitRate);
+
+      updateProfitColor(profit);
+    }
+
+    inputs.forEach(input => {
+      input.addEventListener('input', calculate);
     });
+
+    calculate();
   </script>
 </body>
 </html>
