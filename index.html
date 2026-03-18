@@ -1,10 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>eBay利益計算ツール｜売値・送料・手数料・為替を自動計算</title>
-  <meta name="description" content="eBay販売の利益を簡単に計算できる無料ツールです。売値・仕入れ・送料・eBay手数料・為替レートを入力するだけで、利益と利益率を自動で表示します。" />
+  <meta
+    name="description"
+    content="eBay販売の利益を簡単に計算できる無料ツールです。売値・仕入れ・送料・eBay手数料・為替レートを入力するだけで、利益と利益率を自動で表示します。"
+  />
   <style>
     * {
       box-sizing: border-box;
@@ -38,9 +42,25 @@
       color: #111;
     }
 
+    h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+      color: #111;
+    }
+
     p {
       margin: 0 0 12px;
       color: #444;
+    }
+
+    ul {
+      margin: 0 0 18px 20px;
+      padding: 0;
+      color: #444;
+    }
+
+    li {
+      margin-bottom: 6px;
     }
 
     .form-grid {
@@ -53,10 +73,6 @@
     .field {
       display: flex;
       flex-direction: column;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
     }
 
     label {
@@ -133,6 +149,10 @@
       color: #666;
     }
 
+    .sub-card {
+      margin-top: 20px;
+    }
+
     @media (max-width: 640px) {
       .wrap {
         padding: 16px 12px 32px;
@@ -145,6 +165,10 @@
 
       h1 {
         font-size: 24px;
+      }
+
+      h2 {
+        font-size: 18px;
       }
 
       .form-grid {
@@ -219,40 +243,43 @@
             <div class="result-value" id="profit">0円</div>
           </div>
 
-         <div class="result-item">
-  <div class="result-label">利益率（％）</div>
-  <div class="result-value" id="profitRate">0%</div>
-</div>
+          <div class="result-item">
+            <div class="result-label">利益率（％）</div>
+            <div class="result-value" id="profitRate">0%</div>
+          </div>
 
-<div class="result-item">
-  <div class="result-label">損益分岐売値（USD）</div>
-  <div class="result-value" id="breakEven">0 USD</div>
-</div>
+          <div class="result-item">
+            <div class="result-label">損益分岐売値（USD）</div>
+            <div class="result-value" id="breakEven">0 USD</div>
+          </div>
+        </div>
+      </div>
 
       <p class="note">※ 入力すると自動で計算されます。</p>
-      <div class="card" style="margin-top:20px;">
-  <h2>使い方</h2>
-  <ul>
-    <li>売値（USD）を入力</li>
-    <li>為替レートを入力</li>
-    <li>仕入れ値・送料・手数料を入力</li>
-    <li>利益と利益率を確認</li>
-  </ul>
+    </div>
 
-  <h2>こんな人におすすめ</h2>
-  <ul>
-    <li>eBay初心者</li>
-    <li>出品前に利益を確認したい人</li>
-    <li>仕入れ判断を早くしたい人</li>
-  </ul>
+    <div class="card sub-card">
+      <h2>使い方</h2>
+      <ul>
+        <li>売値（USD）を入力</li>
+        <li>為替レートを入力</li>
+        <li>仕入れ値・送料・手数料を入力</li>
+        <li>利益と利益率を確認</li>
+      </ul>
 
-  <h2>注意点</h2>
-  <ul>
-    <li>為替レートは日々変動します</li>
-    <li>eBay手数料は条件によって変わる場合があります</li>
-    <li>送料は配送方法によって異なります</li>
-  </ul>
-</div>
+      <h2>こんな人におすすめ</h2>
+      <ul>
+        <li>eBay初心者</li>
+        <li>出品前に利益を確認したい人</li>
+        <li>仕入れ判断を早くしたい人</li>
+      </ul>
+
+      <h2>注意点</h2>
+      <ul>
+        <li>為替レートは日々変動します</li>
+        <li>eBay手数料は条件によって変わる場合があります</li>
+        <li>送料は配送方法によって異なります</li>
+      </ul>
     </div>
   </div>
 
@@ -264,11 +291,12 @@
     const shipping = document.getElementById('shipping');
     const otherCost = document.getElementById('otherCost');
 
-   const salesJpyEl = document.getElementById('salesJpy');
+    const salesJpyEl = document.getElementById('salesJpy');
     const totalCostEl = document.getElementById('totalCost');
     const profitEl = document.getElementById('profit');
-  const profitRateEl = document.getElementById('profitRate');
-const breakEvenEl = document.getElementById('breakEven');
+    const profitRateEl = document.getElementById('profitRate');
+    const breakEvenEl = document.getElementById('breakEven');
+
     const inputs = [saleUsd, rate, cost, ebayFee, shipping, otherCost];
 
     function getNumber(value) {
@@ -320,7 +348,7 @@ const breakEvenEl = document.getElementById('breakEven');
       updateProfitColor(profit);
     }
 
-    inputs.forEach(input => {
+    inputs.forEach((input) => {
       input.addEventListener('input', calculate);
     });
 
@@ -328,3 +356,5 @@ const breakEvenEl = document.getElementById('breakEven');
   </script>
 </body>
 </html>
+```
+
