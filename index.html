@@ -3,95 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>eBay利益計算 Pro | 履歴＆コピー機能</title>
+  <title>eBay利益管理 Pro | 集計レポート機能付</title>
   <style>
-    :root { --main: #00457C; --accent: #ffae00; --bg: #f0f2f5; }
+    :root { --main: #00457C; --accent: #ffae00; --bg: #f0f2f5; --white: #ffffff; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; font-family: sans-serif; background: var(--bg); color: #333; line-height: 1.4; }
-    .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-    .card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    h1 { font-size: 18px; text-align: center; margin: 0 0 15px; color: var(--main); }
+    body { margin: 0; font-family: sans-serif; background: var(--bg); color: #333; }
+    
+    /* タブ切り替え */
+    .tabs { display: flex; background: var(--main); position: sticky; top: 0; z-index: 100; }
+    .tab { flex: 1; padding: 15px; text-align: center; color: rgba(255,255,255,0.7); cursor: pointer; font-weight: bold; font-size: 14px; }
+    .tab.active { color: var(--white); border-bottom: 3px solid var(--accent); }
 
-    /* 2カラムレイアウト（横並び） */
+    .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .card { background: var(--white); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    h2 { font-size: 16px; margin: 0 0 15px; color: var(--main); display: flex; align-items: center; gap: 8px; }
+
+    /* 入力エリア：2カラム */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .field { display: flex; flex-direction: column; }
+    .field { display: flex; flex-direction: column; margin-bottom: 8px; }
     label { font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #666; }
-    input { padding: 12px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; width: 100%; outline: none; }
-    input:focus { border-color: var(--main); }
+    input { padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; width: 100%; outline: none; }
     .hint { font-size: 9px; color: #999; margin-top: 2px; }
 
-    /* 結果エリア */
-    .result-box { margin-top: 15px; padding: 15px; border-radius: 12px; background: var(--main); color: #fff; }
-    .res-item { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
-    .res-main { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 8px; margin-top: 8px; font-size: 20px; font-weight: bold; }
+    /* 結果表示 */
+    .result-box { background: var(--main); color: #fff; border-radius: 12px; padding: 15px; margin-top: 10px; }
+    .res-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+    .res-main { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 8px; margin-top: 8px; font-size: 22px; font-weight: bold; }
+
+    /* 集計レポート表示 */
+    .report-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .report-item { background: #f8f9fa; padding: 15px; border-radius: 12px; border-left: 5px solid var(--main); }
+    .report-label { font-size: 12px; color: #666; }
+    .report-val { font-size: 20px; font-weight: bold; color: var(--main); margin-top: 5px; }
 
     /* ボタン */
-    .btn-save { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; margin-top: 15px; cursor: pointer; }
+    .btn-save { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
     .btn-reset { width: 100%; background: none; border: none; color: #888; text-decoration: underline; margin-top: 10px; cursor: pointer; font-size: 12px; }
+    .btn-clear-data { width: 100%; padding: 10px; background: #ffefef; color: #d9534f; border: 1px solid #d9534f; border-radius: 8px; margin-top: 20px; cursor: pointer; font-size: 12px; }
 
-    /* 履歴エリア */
-    .history-area { margin-top: 20px; }
-    .history-head { font-weight: bold; font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
-    .history-list { max-height: 200px; overflow-y: auto; }
-    .history-card { background: #fff; border-radius: 8px; padding: 10px; margin-bottom: 6px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-    .history-info { font-size: 11px; color: #444; }
-    .btn-copy { background: var(--main); color: #fff; border: none; padding: 5px 8px; border-radius: 5px; font-size: 10px; cursor: pointer; }
-
-    .plus { color: #4ade80; }
-    .minus { color: #ff6b6b; }
+    /* 履歴リスト */
+    .history-list { margin-top: 15px; }
+    .history-card { background: #fff; border-bottom: 1px solid #eee; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
+    .history-info { font-size: 12px; }
+    .plus { color: #28a745; }
+    .minus { color: #dc3545; }
   </style>
 </head>
 <body>
 
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('calcPage')">利益計算</div>
+  <div class="tab" onclick="switchTab('reportPage')">集計レポート</div>
+</div>
+
 <div class="container">
-  <div class="card">
-    <h1>eBay利益計算 Pro</h1>
-    
-    <div class="form-grid">
-      <div class="field">
-        <label>売値 (USD)</label>
-        <input type="number" id="saleUsd" placeholder="100" inputmode="decimal">
+  <div id="calcPage" class="page active">
+    <div class="card">
+      <h2>📊 利益計算</h2>
+      <div class="form-grid">
+        <div class="field">
+          <label>売値 (USD)</label>
+          <input type="number" id="saleUsd" placeholder="100" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>為替レート</label>
+          <input type="number" id="rate" value="150" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>仕入れ (円)</label>
+          <input type="number" id="cost" placeholder="5000" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>送料 (円)</label>
+          <input type="number" id="shipping" placeholder="2500" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>eBay手数料 (%)</label>
+          <input type="number" id="feePercent" value="15" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>その他経費 (円)</label>
+          <input type="number" id="other" placeholder="例:300" inputmode="numeric">
+          <span class="hint">梱包材など</span>
+        </div>
       </div>
-      <div class="field">
-        <label>為替レート</label>
-        <input type="number" id="rate" value="150" inputmode="decimal">
-        <span class="hint">目安:150 (Paypalなら-3)</span>
-      </div>
-      <div class="field">
-        <label>仕入れ (円)</label>
-        <input type="number" id="cost" placeholder="5000" inputmode="numeric">
-      </div>
-      <div class="field">
-        <label>送料 (円)</label>
-        <input type="number" id="shipping" placeholder="2500" inputmode="numeric">
-      </div>
-      <div class="field">
-        <label>eBay手数料 (%)</label>
-        <input type="number" id="feePercent" value="15" inputmode="decimal">
-        <span class="hint">目安:15〜18%</span>
-      </div>
-      <div class="field">
-        <label>その他経費 (円)</label>
-        <input type="number" id="other" placeholder="例:300" inputmode="numeric">
-        <span class="hint">梱包材・資材代など</span>
-      </div>
-    </div>
 
-    <div class="result-box">
-      <div class="res-item"><span>円換算売上:</span><span id="salesJpy">¥0</span></div>
-      <div class="res-item"><span>手数料合計:</span><span id="feeJpy">¥0</span></div>
-      <div class="res-item res-main"><span>純利益:</span><span id="profit">¥0</span></div>
-      <div class="res-item"><span>利益率:</span><span id="profitRate">0%</span></div>
-    </div>
+      <div class="result-box">
+        <div class="res-row"><span>円換算売上:</span><span id="salesJpy">¥0</span></div>
+        <div class="res-row"><span>手数料合計:</span><span id="feeJpy">¥0</span></div>
+        <div class="res-row res-main"><span>純利益:</span><span id="profit">¥0</span></div>
+        <div class="res-row"><span>利益率:</span><span id="profitRate">0%</span></div>
+      </div>
 
-    <button class="btn-save" onclick="addHistory()">結果を履歴に保存</button>
-    <button class="btn-reset" onclick="resetAll()">すべてリセット</button>
+      <button class="btn-save" onclick="saveRecord()">この利益を保存する</button>
+      <button class="btn-reset" onclick="resetInputs()">入力をクリア</button>
+    </div>
   </div>
 
-  <div class="history-area">
-    <div class="history-head"><span>計算履歴</span><span id="count">0件</span></div>
-    <div id="historyList" class="history-list">
+  <div id="reportPage" class="page">
+    <div class="card">
+      <h2>📈 収支集計</h2>
+      <div class="report-grid">
+        <div class="report-item">
+          <div class="report-label">今日（本日合計）</div>
+          <div id="dayTotal" class="report-val">¥0</div>
+        </div>
+        <div class="report-item">
+          <div class="report-label">今月（月間合計）</div>
+          <div id="monthTotal" class="report-val">¥0</div>
+        </div>
+        <div class="report-item">
+          <div class="report-label">今年（年間合計）</div>
+          <div id="yearTotal" class="report-val">¥0</div>
+        </div>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>📜 直近の履歴</h2>
+      <div id="historyList" class="history-list"></div>
+      <button class="btn-clear-data" onclick="clearAllData()">すべての履歴データを削除</button>
+    </div>
   </div>
 </div>
 
@@ -100,72 +135,92 @@
   const inputs = {};
   ids.forEach(id => inputs[id] = document.getElementById(id));
 
-  // 計算処理
+  // タブ切り替え
+  function switchTab(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if(pageId === 'reportPage') updateReport();
+  }
+
+  // 計算
   function calc() {
     const val = (id) => parseFloat(inputs[id].value) || 0;
-    
-    // 売値 * レート = 総売上
     const salesJpy = val('saleUsd') * val('rate');
-    // 売上 * 手数料% = 手数料額（これで売値が高いのに赤字になるミスを防ぐ！）
     const feeJpy = salesJpy * (val('feePercent') / 100);
-    // 全コスト合算
-    const totalCost = val('cost') + val('shipping') + val('other') + feeJpy;
-    // 利益
-    const profit = salesJpy - totalCost;
-    const pRate = salesJpy > 0 ? (profit / salesJpy) * 100 : 0;
+    const profitJpy = salesJpy - (val('cost') + val('shipping') + val('other') + feeJpy);
+    const pRate = salesJpy > 0 ? (profitJpy / salesJpy) * 100 : 0;
 
-    // 画面に表示
     document.getElementById('salesJpy').textContent = '¥' + Math.round(salesJpy).toLocaleString();
     document.getElementById('feeJpy').textContent = '¥' + Math.round(feeJpy).toLocaleString();
-    
     const pEl = document.getElementById('profit');
-    pEl.textContent = '¥' + Math.round(profit).toLocaleString();
-    pEl.className = 'res-main ' + (profit >= 0 ? 'plus' : 'minus');
-    
+    pEl.textContent = '¥' + Math.round(profitJpy).toLocaleString();
+    pEl.className = 'res-main ' + (profitJpy >= 0 ? 'plus' : 'minus');
     document.getElementById('profitRate').textContent = pRate.toFixed(1) + '%';
   }
-
-  // 入力するたびにリアルタイム計算
   ids.forEach(id => inputs[id].addEventListener('input', calc));
 
-  // 履歴に追加
-  function addHistory() {
-    const sale = inputs.saleUsd.value || 0;
-    const profit = document.getElementById('profit').textContent;
-    const pRate = document.getElementById('profitRate').textContent;
-    if(sale == 0) return;
-
-    const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    const logText = `【${time}】売$${sale} / 利益${profit}(${pRate})`;
-
-    const div = document.createElement('div');
-    div.className = 'history-card';
-    div.innerHTML = `
-      <div class="history-info">${logText}</div>
-      <button class="btn-copy" onclick="copy('${logText}')">コピー</button>
-    `;
-    
-    const list = document.getElementById('historyList');
-    list.prepend(div); // 上に新しく追加
-    document.getElementById('count').textContent = list.children.length + '件';
-  }
-
-  // コピー機能
-  function copy(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('コピーしました！');
-    });
-  }
-
-  // リセット
-  function resetAll() {
-    if(confirm('入力をクリアしますか？')) {
-      ids.forEach(id => {
-        if(id === 'rate') inputs[id].value = 150;
-        else if(id === 'feePercent') inputs[id].value = 15;
-        else inputs[id].value = '';
-      });
+  // 入力リセット（為替と手数料は残す）
+  function resetInputs() {
+    if(confirm('売値や仕入れ値などの入力をクリアしますか？')) {
+      ['saleUsd', 'cost', 'shipping', 'other'].forEach(id => inputs[id].value = '');
       calc();
+    }
+  }
+
+  // データ保存
+  function saveRecord() {
+    const sale = parseFloat(inputs.saleUsd.value) || 0;
+    if(sale === 0) return alert('売値を入力してください');
+
+    const profit = Math.round(parseFloat(document.getElementById('profit').textContent.replace(/[¥,]/g, '')));
+    const record = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      sale: sale,
+      profit: profit
+    };
+
+    let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
+    data.unshift(record);
+    localStorage.setItem('ebay_pro_data', JSON.stringify(data));
+    alert('保存しました！集計レポートで確認できます。');
+  }
+
+  // レポート更新
+  function updateReport() {
+    const data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
+    const now = new Date();
+    let day = 0, month = 0, year = 0;
+
+    const listEl = document.getElementById('historyList');
+    listEl.innerHTML = '';
+
+    data.forEach(item => {
+      const d = new Date(item.date);
+      if(d.toDateString() === now.toDateString()) day += item.profit;
+      if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) month += item.profit;
+      if(d.getFullYear() === now.getFullYear()) year += item.profit;
+
+      // 履歴リスト作成
+      const div = document.createElement('div');
+      div.className = 'history-card';
+      const dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+      div.innerHTML = `<div class="history-info"><b>${dateStr}</b><br>売値: $${item.sale}</div>
+                       <div class="${item.profit>=0?'plus':'minus'}">¥${item.profit.toLocaleString()}</div>`;
+      listEl.appendChild(div);
+    });
+
+    document.getElementById('dayTotal').textContent = '¥' + day.toLocaleString();
+    document.getElementById('monthTotal').textContent = '¥' + month.toLocaleString();
+    document.getElementById('yearTotal').textContent = '¥' + year.toLocaleString();
+  }
+
+  function clearAllData() {
+    if(confirm('本当にすべての履歴データを削除しますか？戻せません。')) {
+      localStorage.removeItem('ebay_pro_data');
+      updateReport();
     }
   }
 </script>
