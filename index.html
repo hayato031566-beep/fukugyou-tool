@@ -63,7 +63,7 @@
     .hd-text { flex: 1; }
     .hd-name { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: -0.025em; line-height: 1.15; }
     .hd-name span { color: var(--main); }
-    .hd-sub  { font-size: 9.5px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; margin-top: 1px; }
+    .hd-sub   { font-size: 9.5px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; margin-top: 1px; }
     .hd-rate {
       font-size: 11px; color: rgba(255,255,255,0.55);
       background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
@@ -502,6 +502,9 @@
   const inputs = {};
   ids.forEach(id => inputs[id] = document.getElementById(id));
 
+  // ★フィルター状態を保持する変数を追加
+  let currentFilter = 'all';
+
   window.onload = () => {
     inputs.rate.value = localStorage.getItem('cfg_rate') || 150;
     inputs.feePercent.value = localStorage.getItem('cfg_fee') || 15;
@@ -566,7 +569,9 @@
     showToast('保存しました！');
   }
 
-  function updateReport(filter = 'all') {
+  // ★フィルター状態を記憶して更新するように修正
+  function updateReport(filter = currentFilter) {
+    currentFilter = filter;
     const data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
     const goal = parseInt(localStorage.getItem('cfg_goal') || 100000);
     let mSum = 0, pCount = 0, mCount = 0;
@@ -575,13 +580,13 @@
 
     document.getElementById('filter-plus').classList.remove('active-filter');
     document.getElementById('filter-minus').classList.remove('active-filter');
-    if(filter === 'plus') document.getElementById('filter-plus').classList.add('active-filter');
-    if(filter === 'minus') document.getElementById('filter-minus').classList.add('active-filter');
+    if(currentFilter === 'plus') document.getElementById('filter-plus').classList.add('active-filter');
+    if(currentFilter === 'minus') document.getElementById('filter-minus').classList.add('active-filter');
 
     data.forEach(item => {
       mSum += item.profit;
       if(item.profit >= 0) pCount++; else mCount++;
-      let show = (filter === 'all') || (filter === 'plus' && item.profit >= 0) || (filter === 'minus' && item.profit < 0);
+      let show = (currentFilter === 'all') || (currentFilter === 'plus' && item.profit >= 0) || (currentFilter === 'minus' && item.profit < 0);
       if(show) {
         const div = document.createElement('div');
         div.className = 'hist-card';
@@ -608,12 +613,13 @@
     window.open(url, '_blank');
   }
 
+  // ★削除後に現在のフィルター状態を維持して再描画
   function deleteItem(id) {
     if(!confirm('削除しますか？')) return;
     let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
     data = data.filter(i => i.id !== id);
     localStorage.setItem('ebay_pro_data', JSON.stringify(data));
-    updateReport();
+    updateReport(); 
   }
 
   function setGoal() {
