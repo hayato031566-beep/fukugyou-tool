@@ -92,7 +92,7 @@
     .page { display: none; }
     .page.active { display: block; }
 
-    /* ── Result box (Now at the top) ── */
+    /* ── Result box ── */
     .result-box {
       background: var(--ink); color: #fff;
       border-radius: var(--r-lg); padding: 22px 20px 20px;
@@ -120,7 +120,6 @@
     .profit-rate-row { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.03em; margin-bottom: 18px; }
     .profit-rate-row b { color: #fff; font-weight: 500; }
 
-    /* Action Buttons in Result Box */
     .res-actions { display: flex; gap: 8px; position: relative; z-index: 1; }
     .btn-save {
       flex: 2; padding: 12px; background: var(--main); color: #fff; border: none;
@@ -137,7 +136,6 @@
     }
     .btn-reset-top:active { background: rgba(255,255,255,0.2); }
 
-    /* ── Card ── */
     .card {
       background: var(--surface); border-radius: var(--r-lg);
       border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden;
@@ -150,7 +148,6 @@
     }
     h2::before { content: ''; width: 3px; height: 12px; background: var(--main); border-radius: 2px; }
 
-    /* ── Form grid ── */
     .form-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 13px; padding: 12px 18px 18px;
@@ -163,7 +160,6 @@
       text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;
     }
 
-    /* ── Input ── */
     .iw { display: flex; align-items: stretch; }
     .cb {
       display: flex; align-items: center; justify-content: center;
@@ -183,7 +179,6 @@
     .iw input { border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; flex: 1; }
     input:focus { border-color: var(--main); background: var(--surface); box-shadow: 0 0 0 3px rgba(192,89,58,0.10); }
 
-    /* ── Quick buttons ── */
     .quick-group { display: flex; gap: 7px; margin-top: 8px; }
     .q-btn {
       flex: 1; background: var(--bg2); border: 1px solid var(--border);
@@ -192,7 +187,6 @@
     }
     .q-btn small { font-size: 9px; font-weight: 400; opacity: 0.6; }
 
-    /* ── Back-calc ── */
     .btn-toggle {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       width: calc(100% - 36px); margin: 0 18px 14px; padding: 11px; background: var(--bg2);
@@ -205,7 +199,6 @@
       font-size: 13px; font-weight: 500; cursor: pointer; min-height: 44px;
     }
 
-    /* ── Report ── */
     .report-hero {
       background: var(--ink); color: #fff; border-radius: var(--r-lg); padding: 20px; margin-bottom: 10px; position: relative;
     }
@@ -386,7 +379,6 @@
     localStorage.setItem('cfg_rate', inputs.rate.value);
     localStorage.setItem('cfg_fee', inputs.feePercent.value);
 
-    // 全世界対応（ロカライズ）の通貨フォーマッター
     const fmt = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'JPY' }).format;
 
     const sJpy = Math.round(val('saleUsd') * val('rate'));
@@ -473,8 +465,12 @@
     updateReport(currentFilter); 
   }
 
+  // ── 修正したリセット機能 ──
   function resetInputs() {
-    ['itemName', 'saleUsd', 'cost', 'shipping', 'other'].forEach(id => inputs[id].value = (id==='other' ? 0 : ''));
+    // 消すのは入力項目だけ。レートと手数料は残します。
+    ['itemName', 'saleUsd', 'cost', 'shipping', 'other'].forEach(id => {
+      inputs[id].value = (id === 'other' ? 0 : '');
+    });
     calc();
     showToast('入力をリセットしました');
   }
