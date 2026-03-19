@@ -131,7 +131,7 @@
     }
     .cb.d { background: var(--dollar-bg); border-color: var(--dollar-bd); color: var(--dollar-txt); }
     .cb.y { background: var(--yen-bg);    border-color: var(--yen-bd);    color: var(--yen-txt); }
-    .cb.p { background: var(--bg2);       border-color: var(--border);    color: var(--ink3); font-size: 13px; }
+    .cb.p { background: var(--bg2);        border-color: var(--border);    color: var(--ink3); font-size: 13px; }
 
     input {
       padding: 11px 12px;
@@ -220,13 +220,11 @@
     }
     .res-row span { display: flex; align-items: center; gap: 4px; }
 
-    /* 利益 — 最大フォント */
     #profit {
       font-size: 56px; font-weight: 300; letter-spacing: -0.05em;
       line-height: 1; margin: 4px 0 6px;
       transition: color 0.3s;
     }
-    /* JSがstyle.colorで直接制御するためCSSクラスは不要 */
 
     .profit-rate-row { font-size: 11.5px; color: rgba(255,255,255,0.35); letter-spacing: 0.03em; }
 
@@ -266,7 +264,6 @@
     }
     .report-hero h2::before { background: var(--main); }
 
-    /* goal-btn */
     .report-hero h2 .q-btn {
       font-size: 10px; padding: 4px 10px; border-radius: 20px;
       background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
@@ -274,6 +271,14 @@
       font-weight: 500; gap: 0;
     }
     .report-hero h2 .q-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    /* X Share Button Style */
+    .btn-share {
+      background: #000 !important;
+      border-color: rgba(255,255,255,0.3) !important;
+      color: #fff !important;
+      margin-left: 6px;
+    }
 
     #monthTotal {
       font-size: 44px; font-weight: 300; letter-spacing: -0.04em;
@@ -286,7 +291,6 @@
       margin-bottom: 8px;
     }
 
-    /* ── Progress bar — thick & color-reactive ── */
     .bar-bg {
       background: rgba(255,255,255,0.10);
       height: 10px; border-radius: 6px; overflow: hidden; margin: 0;
@@ -301,7 +305,6 @@
                   background-position 0.7s ease;
     }
 
-    /* ── Sum grid ── */
     .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 0; }
     .sum-item {
       background: var(--surface); padding: 14px 12px; border-radius: var(--r);
@@ -313,7 +316,6 @@
     .sum-item div { font-size: 9px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; margin-bottom: 5px; }
     .sum-item b { font-size: 28px; font-weight: 300; display: block; letter-spacing: -0.03em; }
 
-    /* ── History ── */
     .hist-card {
       background: var(--surface); padding: 12px 14px;
       border-radius: var(--r-sm); margin-bottom: 6px;
@@ -331,7 +333,6 @@
     }
     .hist-del:hover { background: var(--red-l); }
 
-    /* ── Toast ── */
     #toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: var(--ink); color: rgba(255,255,255,0.9);
@@ -350,7 +351,6 @@
 
 <div id="toast"></div>
 
-<!-- Header -->
 <div class="header">
   <div class="hd-logo">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
@@ -362,17 +362,14 @@
   <div class="hd-rate"><div class="hd-dot"></div><span id="rateDisplay">¥150/$</span></div>
 </div>
 
-<!-- Tabs -->
 <div class="tabs">
-  <div class="tab active" id="tab-calc"   onclick="switchTab('calcPage')">利益計算</div>
-  <div class="tab"        id="tab-report" onclick="switchTab('reportPage')">集計レポート</div>
+  <div class="tab active" id="tab-calc"    onclick="switchTab('calcPage')">利益計算</div>
+  <div class="tab"         id="tab-report" onclick="switchTab('reportPage')">集計レポート</div>
 </div>
 
 <div class="container">
 
-  <!-- ════ 計算ページ ════ -->
   <div id="calcPage" class="page active">
-
     <div class="card">
       <h2>商品メモ</h2>
       <div class="form-grid" style="padding-top:10px;">
@@ -385,8 +382,6 @@
     <div class="card">
       <h2>取引情報を入力</h2>
       <div class="form-grid">
-
-        <!-- 為替レート -->
         <div class="field">
           <label>為替レート</label>
           <div class="iw">
@@ -394,8 +389,6 @@
             <input type="number" id="rate" value="150" placeholder="150">
           </div>
         </div>
-
-        <!-- eBay手数料 -->
         <div class="field">
           <label>eBay手数料</label>
           <div class="iw">
@@ -403,8 +396,6 @@
             <input type="number" id="feePercent" value="15" placeholder="15">
           </div>
         </div>
-
-        <!-- 売値 -->
         <div class="field">
           <label>売値 ($)</label>
           <div class="iw">
@@ -412,8 +403,6 @@
             <input type="number" id="saleUsd" placeholder="例: 120.00">
           </div>
         </div>
-
-        <!-- 仕入れ -->
         <div class="field">
           <label>仕入れ (￥)</label>
           <div class="iw">
@@ -421,8 +410,6 @@
             <input type="number" id="cost" placeholder="例: 5,000">
           </div>
         </div>
-
-        <!-- 国際送料 -->
         <div class="field">
           <label>国際送料 (￥)</label>
           <div class="iw">
@@ -430,16 +417,10 @@
             <input type="number" id="shipping" placeholder="例: 3,000">
           </div>
           <div class="quick-group">
-            <button class="q-btn" onclick="setShipping(3000)">
-              ✈ FedEx<small>¥3,000</small>
-            </button>
-            <button class="q-btn" onclick="setShipping(5000)">
-              📦 EMS<small>¥5,000</small>
-            </button>
+            <button class="q-btn" onclick="setShipping(3000)">✈ FedEx<small>¥3,000</small></button>
+            <button class="q-btn" onclick="setShipping(5000)">📦 EMS<small>¥5,000</small></button>
           </div>
         </div>
-
-        <!-- 経費 -->
         <div class="field">
           <label>経費・雑費 (￥)</label>
           <div class="iw">
@@ -447,10 +428,8 @@
             <input type="number" id="other" value="0" placeholder="例: 500">
           </div>
         </div>
+      </div>
 
-      </div><!-- /form-grid -->
-
-      <!-- 逆算 -->
       <button class="btn-toggle" onclick="toggleBackCalc()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a6 6 0 010 12h-1"/></svg>
         【逆算】いくらで売ればいい？
@@ -462,10 +441,8 @@
           <button onclick="calcBack()">売値を計算</button>
         </div>
       </div>
+    </div>
 
-    </div><!-- /card -->
-
-    <!-- 結果 -->
     <div class="result-box">
       <div class="res-row">
         <span>売上 <span id="salesJpy">¥0</span></span>
@@ -480,17 +457,17 @@
       この利益を記録する
     </button>
     <button class="btn-reset" onclick="resetInputs()">入力をリセット</button>
+  </div>
 
-  </div><!-- /calcPage -->
 
-
-  <!-- ════ レポートページ ════ -->
   <div id="reportPage" class="page">
-
     <div class="report-hero">
       <h2 style="display:flex; justify-content:space-between; align-items:center; padding:0 0 4px;">
         📈 今月の進捗
-        <button class="q-btn" style="padding:4px 10px;" onclick="setGoal()">目標設定</button>
+        <div style="display:flex;">
+          <button class="q-btn" onclick="setGoal()">目標設定</button>
+          <button class="q-btn btn-share" onclick="shareOnX()">𝕏 でシェア</button>
+        </div>
       </h2>
       <div class="goal-meta">
         <span id="goalText">目標: ¥100,000</span>
@@ -515,12 +492,10 @@
     </div>
 
     <div id="historyList"></div>
-
     <button class="btn-reset" style="color:var(--red); width:100%; opacity:0.5;" onclick="clearAllData()">データを全削除</button>
+  </div>
 
-  </div><!-- /reportPage -->
-
-</div><!-- /container -->
+</div>
 
 <script>
   const ids = ['itemName', 'rate', 'feePercent', 'saleUsd', 'cost', 'shipping', 'other'];
@@ -564,7 +539,6 @@
     pEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
     document.getElementById('profitRate').textContent = pRate.toFixed(1) + '%';
 
-    // ヘッダーのレート表示を更新
     const rd = document.getElementById('rateDisplay');
     if (rd) rd.textContent = '¥' + (val('rate') || 150) + '/$';
   }
@@ -623,9 +597,15 @@
     document.getElementById('goalText').textContent = '目標: ¥' + goal.toLocaleString();
     const per = Math.min(100, Math.max(0, Math.round((mSum / goal) * 100)));
     document.getElementById('goalBar').style.width = per + '%';
-    // 達成率で progressbar の色位置を動かす（赤→オレンジ→緑）
     document.getElementById('goalBar').style.backgroundPosition = (100 - per) + '% center';
     document.getElementById('percentText').textContent = per + '%';
+  }
+
+  function shareOnX() {
+    const total = document.getElementById('monthTotal').textContent;
+    const text = encodeURIComponent(`今月の利益は${total}！ #デルベイ`);
+    const url = `https://twitter.com/intent/tweet?text=${text}`;
+    window.open(url, '_blank');
   }
 
   function deleteItem(id) {
