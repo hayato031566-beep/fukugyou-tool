@@ -181,11 +181,15 @@
     .cb.y { background: var(--yen-bg);    border-color: var(--yen-bd);    color: var(--yen-txt); }
     .cb.p { background: var(--bg2);        border-color: var(--border);    color: var(--ink3); font-size: 13px; }
 
+    /* 入力欄を徹底的に中央（正面）に寄せる設定 */
     input {
       padding: 11px 12px; border: 1px solid #e5e5e5; border-radius: var(--r-sm);
       font-size: 15px; font-family: 'Inter', sans-serif; background: var(--bg); width: 100%;
       min-height: 44px; -webkit-appearance: none;
-      text-align: center; /* 入力文字を中央（正面）に寄せる修正 */
+      text-align: center !important; /* 強制的に中央寄せ */
+    }
+    input::placeholder {
+      text-align: center; /* プレースホルダーも中央寄せ */
     }
     .iw input { border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; flex: 1; }
     input:focus { border-color: var(--main); background: var(--surface); box-shadow: 0 0 0 3px rgba(192,89,58,0.10); }
@@ -360,7 +364,6 @@
 </div>
 
 <script>
-  // ID定義と要素取得
   const ids = ['itemName', 'rate', 'feePercent', 'saleUsd', 'cost', 'shipping', 'other'];
   const inputs = {};
   ids.forEach(id => {
