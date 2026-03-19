@@ -47,7 +47,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 罰ボタン（スピンボタン）を非表示にする設定 */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -57,7 +56,6 @@
       -moz-appearance: textfield;
     }
 
-    /* ── Header ── */
     .header {
       background: var(--ink);
       padding: 13px 18px 11px;
@@ -82,7 +80,6 @@
     }
     .hd-dot { width: 5px; height: 5px; border-radius: 50%; background: #2ecc71; }
 
-    /* ── Tabs ── */
     .tabs {
       display: flex; background: var(--ink);
       border-bottom: 1px solid rgba(255,255,255,0.07);
@@ -97,12 +94,10 @@
     }
     .tab.active { color: #fff; border-bottom-color: var(--main); font-weight: 500; }
 
-    /* ── Layout ── */
     .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 18px 14px 60px; }
     .page { display: none; }
     .page.active { display: block; }
 
-    /* ── Result box ── */
     .result-box {
       background: var(--ink); color: #fff;
       border-radius: var(--r-lg); padding: 22px 20px 20px;
@@ -162,7 +157,8 @@
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 13px; padding: 12px 18px 18px;
     }
-    .field { display: flex; flex-direction: column; position: relative; }
+    /* 修正: フィールドが親の幅いっぱいに広がるように設定 */
+    .field { display: flex; flex-direction: column; position: relative; width: 100%; }
     .field.full { grid-column: 1 / 3; }
 
     label {
@@ -170,7 +166,7 @@
       text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;
     }
 
-    .iw { display: flex; align-items: stretch; position: relative; }
+    .iw { display: flex; align-items: stretch; position: relative; width: 100%; }
     .cb {
       display: flex; align-items: center; justify-content: center;
       min-width: 36px; padding: 0 10px; font-size: 15px; font-weight: 700;
@@ -181,16 +177,16 @@
     .cb.y { background: var(--yen-bg);    border-color: var(--yen-bd);    color: var(--yen-txt); }
     .cb.p { background: var(--bg2);        border-color: var(--border);    color: var(--ink3); font-size: 13px; }
 
-    /* すべての入力欄を中央寄せにする設定（ここが重要） */
+    /* 修正: 左右パディングを0にし、text-alignを中央に固定 */
     input {
-      padding: 11px 12px; border: 1px solid #e5e5e5; border-radius: var(--r-sm);
+      padding: 11px 0; border: 1px solid #e5e5e5; border-radius: var(--r-sm);
       font-size: 15px; font-family: 'Inter', sans-serif; background: var(--bg); width: 100%;
       min-height: 44px; -webkit-appearance: none;
-      text-align: center !important; /* 強制的に中央へ */
+      text-align: center !important;
     }
     .iw input {
       border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; flex: 1;
-      text-align: center !important; /* 通貨記号横の入力欄も中央へ */
+      text-align: center !important;
     }
     input:focus { border-color: var(--main); background: var(--surface); box-shadow: 0 0 0 3px rgba(192,89,58,0.10); }
 
@@ -256,7 +252,6 @@
 </div>
 
 <div class="container">
-
   <div id="calcPage" class="page active">
     <div class="card">
       <h2>商品メモ</h2>
@@ -360,7 +355,6 @@
     <div id="historyList"></div>
     <button onclick="clearAllData()" style="width:100%; background:none; border:none; color:var(--red); font-size:11px; margin-top:20px; opacity:0.5;">データを全削除</button>
   </div>
-
 </div>
 
 <script>
