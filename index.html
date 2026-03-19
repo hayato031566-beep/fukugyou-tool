@@ -243,23 +243,6 @@
 <div class="container">
 
   <div id="calcPage" class="page active">
-    <div class="result-box">
-      <div class="res-row">
-        <span>売上: <b id="salesJpy">¥0</b></span>
-        <span>手数料: <b id="feeJpy">¥0</b></span>
-      </div>
-      <div id="profit">¥0</div>
-      <div class="profit-rate-row">利益率: <b id="profitRate">0.0%</b></div>
-      
-      <div class="res-actions">
-        <button class="btn-save" onclick="saveRecord()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-          利益を記録
-        </button>
-        <button class="btn-reset-top" onclick="resetInputs()">リセット</button>
-      </div>
-    </div>
-
     <div class="card">
       <h2>商品メモ</h2>
       <div class="form-grid" style="padding-top:10px;">
@@ -312,6 +295,23 @@
           <input type="number" id="targetProfit" value="3000">
           <button onclick="calcBack()">計算</button>
         </div>
+      </div>
+    </div>
+
+    <div class="result-box">
+      <div class="res-row">
+        <span>売上: <b id="salesJpy">¥0</b></span>
+        <span>手数料: <b id="feeJpy">¥0</b></span>
+      </div>
+      <div id="profit">¥0</div>
+      <div class="profit-rate-row">利益率: <b id="profitRate">0.0%</b></div>
+      
+      <div class="res-actions">
+        <button class="btn-save" onclick="saveRecord()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+          利益を記録
+        </button>
+        <button class="btn-reset-top" onclick="resetInputs()">リセット</button>
       </div>
     </div>
   </div>
@@ -465,9 +465,7 @@
     updateReport(currentFilter); 
   }
 
-  // ── 修正したリセット機能 ──
   function resetInputs() {
-    // 消すのは入力項目だけ。レートと手数料は残します。
     ['itemName', 'saleUsd', 'cost', 'shipping', 'other'].forEach(id => {
       inputs[id].value = (id === 'other' ? 0 : '');
     });
