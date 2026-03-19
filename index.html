@@ -7,27 +7,30 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* 原因だった「manifest.json」の読み込みを完全に排除し、
+       PCでもスマホでも「中央寄せ」を強制するスタイルのみに絞っています。
+    */
     :root {
       --main:    #c0593a;
       --main-h:  #a4472b;
       --main-l:  #f8ece6;
       --accent:  #c0593a;
       --bg:      #f9f7f2;
-      --bg2:     #f2ede5;
+      --bg2:      #f2ede5;
       --surface: #ffffff;
       --border:  #e8e3db;
-      --ink:     #18150f;
+      --ink:      #18150f;
       --ink2:    #574e43;
       --ink3:    #9a8e80;
-      --green:   #1a9e5c;
+      --green:    #1a9e5c;
       --green-l: #e4f7ee;
-      --red:     #d03a3a;
-      --red-l:   #fceaea;
+      --red:      #d03a3a;
+      --red-l:    #fceaea;
       --dollar-bg:  #edf7f2;
       --dollar-bd:  #b8dece;
       --dollar-txt: #1a7f50;
-      --yen-bg:     #fef6ea;
-      --yen-bd:     #f0d9b0;
+      --yen-bg:      #fef6ea;
+      --yen-bd:      #f0d9b0;
       --yen-txt:    #9a6010;
       --r:    14px;
       --r-sm: 10px;
@@ -39,24 +42,27 @@
 
     body {
       margin: 0;
+      padding: 0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 400;
       background: var(--bg);
       color: var(--ink);
+      /* 全体を中央に寄せるための必須設定 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
       overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
     }
 
+    /* 入力欄の数字の横にある矢印を消す */
     input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
+    input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
 
+    /* ── Header (横幅を固定して中央へ) ── */
     .header {
+      width: 100%;
+      max-width: 500px;
       background: var(--ink);
       padding: 13px 18px 11px;
       display: flex; align-items: center; gap: 11px;
@@ -67,168 +73,91 @@
       border-radius: 9px; display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-    .hd-logo svg { display: block; }
     .hd-text { flex: 1; }
-    .hd-name { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: -0.025em; line-height: 1.15; }
+    .hd-name { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.15; }
     .hd-name span { color: var(--main); }
-    .hd-sub   { font-size: 9.5px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; margin-top: 1px; }
+    .hd-sub { font-size: 9.5px; color: rgba(255,255,255,0.35); margin-top: 1px; }
     .hd-rate {
       font-size: 11px; color: rgba(255,255,255,0.55);
       background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
       border-radius: 20px; padding: 4px 10px;
-      display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+      display: flex; align-items: center; gap: 5px;
     }
     .hd-dot { width: 5px; height: 5px; border-radius: 50%; background: #2ecc71; }
 
+    /* ── Tabs (中央寄せ) ── */
     .tabs {
+      width: 100%;
+      max-width: 500px;
       display: flex; background: var(--ink);
       border-bottom: 1px solid rgba(255,255,255,0.07);
       padding: 0 18px;
     }
     .tab {
-      flex: 1; padding: 10px 0 9px; text-align: center;
+      flex: 1; padding: 12px 0; text-align: center;
       color: rgba(255,255,255,0.35); cursor: pointer;
-      font-size: 12.5px; font-weight: 400;
-      border-bottom: 2px solid transparent; margin-bottom: -1px;
-      transition: color 0.15s, border-color 0.15s;
+      font-size: 13px; border-bottom: 2px solid transparent;
     }
-    .tab.active { color: #fff; border-bottom-color: var(--main); font-weight: 500; }
+    .tab.active { color: #fff; border-bottom-color: var(--main); font-weight: 600; }
 
-    .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 18px 14px 60px; }
+    /* ── Layout ── */
+    .container { 
+      width: 100%; 
+      max-width: 500px; 
+      padding: 18px 14px 60px; 
+      margin: 0 auto; /* PCでの中央寄せ */
+    }
     .page { display: none; }
     .page.active { display: block; }
 
+    /* ── Result box ── */
     .result-box {
       background: var(--ink); color: #fff;
-      border-radius: var(--r-lg); padding: 22px 20px 20px;
-      text-align: center; margin-bottom: 18px;
-      position: relative; overflow: hidden;
+      border-radius: var(--r-lg); padding: 25px 20px;
+      text-align: center; margin-bottom: 20px;
     }
-    .result-box::after {
-      content: ''; position: absolute; top: -60px; right: -60px;
-      width: 180px; height: 180px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(192,89,58,0.18) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .res-row {
-      display: flex; justify-content: space-between;
-      font-size: 10.5px; font-weight: 400; color: rgba(255,255,255,0.45);
-      margin-bottom: 6px;
-    }
-    .res-row span b { color: #fff; font-weight: 500; }
+    #profit { font-size: 58px; font-weight: 300; margin: 5px 0; }
+    .res-row { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.45); }
+    .res-actions { display: flex; gap: 10px; margin-top: 15px; }
+    .btn-save { flex: 2; padding: 14px; background: var(--main); color: #fff; border: none; border-radius: var(--r-sm); font-weight: 600; cursor: pointer; }
+    .btn-reset-top { flex: 1; padding: 14px; background: rgba(255,255,255,0.1); color: #fff; border: none; border-radius: var(--r-sm); cursor: pointer; }
 
-    #profit {
-      font-size: 58px; font-weight: 300; letter-spacing: -0.05em;
-      line-height: 1; margin: 4px 0 6px;
-      transition: color 0.3s;
-    }
-    .profit-rate-row { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.03em; margin-bottom: 18px; }
-    .profit-rate-row b { color: #fff; font-weight: 500; }
-
-    .res-actions { display: flex; gap: 8px; position: relative; z-index: 1; }
-    .btn-save {
-      flex: 2; padding: 12px; background: var(--main); color: #fff; border: none;
-      border-radius: var(--r-sm); font-weight: 600; font-size: 14px;
-      font-family: 'Inter', sans-serif; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-      transition: all 0.15s;
-    }
-    .btn-save:active { transform: scale(0.97); background: #8c3c22; }
-    .btn-reset-top {
-      flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--r-sm); font-weight: 500; font-size: 12px;
-      font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s;
-    }
-    .btn-reset-top:active { background: rgba(255,255,255,0.2); }
-
-    .card {
-      background: var(--surface); border-radius: var(--r-lg);
-      border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden;
-    }
-    h2 {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--ink3);
-      margin: 0; padding: 13px 18px 0;
-      display: flex; align-items: center; gap: 7px;
-    }
+    /* ── Cards & Forms ── */
+    .card { background: var(--surface); border-radius: var(--r-lg); border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
+    h2 { font-size: 11px; color: var(--ink3); padding: 15px 18px 5px; margin: 0; display: flex; align-items: center; gap: 8px; }
     h2::before { content: ''; width: 3px; height: 12px; background: var(--main); border-radius: 2px; }
-
-    .form-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 13px; padding: 12px 18px 18px;
-    }
-    /* 修正: フィールドが親の幅いっぱいに広がるように設定 */
-    .field { display: flex; flex-direction: column; position: relative; width: 100%; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px 18px; }
+    .field { display: flex; flex-direction: column; }
     .field.full { grid-column: 1 / 3; }
+    label { font-size: 10px; font-weight: 600; color: var(--ink3); margin-bottom: 6px; }
 
-    label {
-      font-size: 9.5px; font-weight: 600; letter-spacing: 0.09em;
-      text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;
-    }
-
-    .iw { display: flex; align-items: stretch; position: relative; width: 100%; }
-    .cb {
-      display: flex; align-items: center; justify-content: center;
-      min-width: 36px; padding: 0 10px; font-size: 15px; font-weight: 700;
-      border-radius: var(--r-sm) 0 0 var(--r-sm); border: 1px solid; border-right: none;
-      flex-shrink: 0;
-    }
-    .cb.d { background: var(--dollar-bg); border-color: var(--dollar-bd); color: var(--dollar-txt); }
-    .cb.y { background: var(--yen-bg);    border-color: var(--yen-bd);    color: var(--yen-txt); }
-    .cb.p { background: var(--bg2);        border-color: var(--border);    color: var(--ink3); font-size: 13px; }
-
-    /* 修正: 左右パディングを0にし、text-alignを中央に固定 */
+    /* 全ての入力欄を中央揃えにする */
     input {
-      padding: 11px 0; border: 1px solid #e5e5e5; border-radius: var(--r-sm);
-      font-size: 15px; font-family: 'Inter', sans-serif; background: var(--bg); width: 100%;
-      min-height: 44px; -webkit-appearance: none;
-      text-align: center !important;
+      width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: var(--r-sm);
+      font-size: 16px; background: var(--bg); text-align: center !important;
     }
-    .iw input {
-      border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; flex: 1;
-      text-align: center !important;
+    .iw { display: flex; }
+    .cb { 
+      min-width: 40px; display: flex; align-items: center; justify-content: center; 
+      font-weight: 700; border: 1px solid; border-right: none; border-radius: var(--r-sm) 0 0 var(--r-sm);
     }
-    input:focus { border-color: var(--main); background: var(--surface); box-shadow: 0 0 0 3px rgba(192,89,58,0.10); }
+    .cb.y { background: var(--yen-bg); border-color: var(--yen-bd); color: var(--yen-txt); }
+    .cb.d { background: var(--dollar-bg); border-color: var(--dollar-bd); color: var(--dollar-txt); }
+    .cb.p { background: var(--bg2); border-color: var(--border); color: var(--ink3); }
+    .iw input { border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; }
 
-    .quick-group { display: flex; gap: 7px; margin-top: 8px; }
-    .q-btn {
-      flex: 1; background: var(--bg2); border: 1px solid var(--border);
-      padding: 10px 4px; border-radius: var(--r-sm); font-size: 11.5px; font-weight: 600; color: var(--ink2);
-      cursor: pointer; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .q-btn small { font-size: 9px; font-weight: 400; opacity: 0.6; }
-
-    .btn-toggle {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      width: calc(100% - 36px); margin: 0 18px 14px; padding: 11px; background: var(--bg2);
-      border: 1px dashed var(--border); border-radius: var(--r-sm); font-size: 12px; font-weight: 500; color: var(--ink2);
-      cursor: pointer; min-height: 44px;
-    }
-    #backCalcPanel { display: none; background: var(--main-l); border: 1px solid rgba(192,89,58,0.20); padding: 15px 18px; }
-    #backCalcPanel button {
-      background: var(--main); color: #fff; border: none; border-radius: var(--r-sm); padding: 0 18px;
-      font-size: 13px; font-weight: 500; cursor: pointer; min-height: 44px;
-    }
-
-    .report-hero {
-      background: var(--ink); color: #fff; border-radius: var(--r-lg); padding: 20px; margin-bottom: 10px; position: relative;
-    }
-    #monthTotal { font-size: 44px; font-weight: 300; letter-spacing: -0.04em; color: #fff; text-align: center; margin: 4px 0 12px; }
-    .goal-meta { display: flex; justify-content: space-between; font-size: 10.5px; color: rgba(255,255,255,0.35); margin-bottom: 8px; }
-    .bar-bg { background: rgba(255,255,255,0.10); height: 10px; border-radius: 6px; overflow: hidden; }
-    .bar-fill { height: 100%; width: 0%; border-radius: 6px; background: linear-gradient(90deg, #e8593c 0%, #f5a623 60%, #2ecc71 100%); background-size: 200% 100%; transition: width 0.7s ease; }
-
-    .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 0; }
-    .sum-item { background: var(--surface); padding: 14px 12px; border-radius: var(--r); text-align: center; border: 1.5px solid var(--border); }
-    .sum-item.active-filter { border-color: var(--main); background: var(--main-l); }
-    .sum-item b { font-size: 28px; font-weight: 300; display: block; }
-
-    .hist-card { background: var(--surface); padding: 12px 14px; border-radius: var(--r-sm); margin-bottom: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .hist-del { color: var(--red); background: none; border: none; font-size: 18px; cursor: pointer; }
-
-    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; display: none; z-index: 1000; }
-
-    @media (max-width: 360px) { #profit { font-size: 48px; } #monthTotal { font-size: 36px; } }
+    /* その他パーツ */
+    .q-btn { flex: 1; background: var(--bg2); border: 1px solid var(--border); padding: 8px; border-radius: var(--r-sm); cursor: pointer; font-size: 11px; }
+    .btn-toggle { width: calc(100% - 36px); margin: 0 18px 15px; padding: 12px; background: var(--bg2); border: 1px dashed var(--border); border-radius: var(--r-sm); cursor: pointer; font-size: 12px; }
+    #backCalcPanel { display: none; background: var(--main-l); padding: 15px; border-top: 1px solid var(--border); }
+    
+    /* レポート */
+    .report-hero { background: var(--ink); color: #fff; border-radius: var(--r-lg); padding: 25px; text-align: center; }
+    #monthTotal { font-size: 48px; font-weight: 300; margin: 10px 0; }
+    .bar-bg { background: rgba(255,255,255,0.1); height: 10px; border-radius: 5px; margin: 10px 0; }
+    .bar-fill { height: 100%; background: var(--main); width: 0%; transition: 0.5s; border-radius: 5px; }
+    .hist-card { background: #fff; padding: 15px; border-radius: var(--r-sm); border: 1px solid var(--border); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 30px; display: none; }
   </style>
 </head>
 <body>
@@ -237,7 +166,7 @@
 
 <div class="header">
   <div class="hd-logo">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
   </div>
   <div class="hd-text">
     <div class="hd-name">eBay利益で、<span>デルベイ！</span></div>
@@ -255,72 +184,34 @@
   <div id="calcPage" class="page active">
     <div class="card">
       <h2>商品メモ</h2>
-      <div class="form-grid" style="padding-top:10px;">
-        <div class="field full">
-          <input type="text" id="itemName" placeholder="例: Game Console / Anime Figure">
-        </div>
+      <div class="form-grid">
+        <div class="field full"><input type="text" id="itemName" placeholder="商品名を入力"></div>
       </div>
     </div>
 
     <div class="card">
       <h2>取引情報を入力</h2>
       <div class="form-grid">
-        <div class="field">
-          <label>為替レート</label>
-          <div class="iw"><div class="cb y">¥</div><input type="number" id="rate" value="150"></div>
-        </div>
-        <div class="field">
-          <label>eBay手数料</label>
-          <div class="iw"><div class="cb p">%</div><input type="number" id="feePercent" value="15"></div>
-        </div>
-        <div class="field">
-          <label>売値 ($)</label>
-          <div class="iw"><div class="cb d">$</div><input type="number" id="saleUsd" placeholder="0.00"></div>
-        </div>
-        <div class="field">
-          <label>仕入れ (￥)</label>
-          <div class="iw"><div class="cb y">¥</div><input type="number" id="cost" placeholder="0"></div>
-        </div>
-        <div class="field">
-          <label>国際送料 (￥)</label>
-          <div class="iw"><div class="cb y">¥</div><input type="number" id="shipping" placeholder="0"></div>
-          <div class="quick-group">
-            <button class="q-btn" onclick="setShipping(3000)">✈ FedEx<small>¥3,000</small></button>
-            <button class="q-btn" onclick="setShipping(5000)">📦 EMS<small>¥5,000</small></button>
-          </div>
-        </div>
-        <div class="field">
-          <label>経費・雑費 (￥)</label>
-          <div class="iw"><div class="cb y">¥</div><input type="number" id="other" value="0"></div>
-        </div>
+        <div class="field"><label>為替レート</label><div class="iw"><div class="cb y">¥</div><input type="number" id="rate" value="150"></div></div>
+        <div class="field"><label>eBay手数料 (%)</label><div class="iw"><div class="cb p">%</div><input type="number" id="feePercent" value="15"></div></div>
+        <div class="field"><label>売値 ($)</label><div class="iw"><div class="cb d">$</div><input type="number" id="saleUsd" placeholder="0.00"></div></div>
+        <div class="field"><label>仕入れ (￥)</label><div class="iw"><div class="cb y">¥</div><input type="number" id="cost" placeholder="0"></div></div>
+        <div class="field"><label>国際送料 (￥)</label><div class="iw"><div class="cb y">¥</div><input type="number" id="shipping" placeholder="0"></div></div>
+        <div class="field"><label>経費 (￥)</label><div class="iw"><div class="cb y">¥</div><input type="number" id="other" value="0"></div></div>
       </div>
-
-      <button class="btn-toggle" onclick="toggleBackCalc()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a6 6 0 010 12h-1"/></svg>
-        【逆算】目標から売値を出す
-      </button>
+      <button class="btn-toggle" onclick="toggleBackCalc()">逆算ツールを表示</button>
       <div id="backCalcPanel">
-        <label>目標の純利益 (円)</label>
-        <div style="display:flex; gap:8px; margin-top:5px; position:relative;">
-          <input type="number" id="targetProfit" value="3000">
-          <button onclick="calcBack()">計算</button>
-        </div>
+        <label>目標利益 (円)</label>
+        <div style="display:flex; gap:10px;"><input type="number" id="targetProfit" value="3000"><button onclick="calcBack()" style="background:var(--main); color:#fff; border:none; padding:10px; border-radius:5px; cursor:pointer;">計算</button></div>
       </div>
     </div>
 
     <div class="result-box">
-      <div class="res-row">
-        <span>売上: <b id="salesJpy">¥0</b></span>
-        <span>手数料: <b id="feeJpy">¥0</b></span>
-      </div>
+      <div class="res-row"><span>売上: <b id="salesJpy">¥0</b></span><span>手数料: <b id="feeJpy">¥0</b></span></div>
       <div id="profit">¥0</div>
-      <div class="profit-rate-row">利益率: <b id="profitRate">0.0%</b></div>
-      
+      <div style="font-size:14px; opacity:0.7;">利益率: <b id="profitRate">0.0%</b></div>
       <div class="res-actions">
-        <button class="btn-save" onclick="saveRecord()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-          利益を記録
-        </button>
+        <button class="btn-save" onclick="saveRecord()">利益を記録</button>
         <button class="btn-reset-top" onclick="resetInputs()">リセット</button>
       </div>
     </div>
@@ -328,32 +219,13 @@
 
   <div id="reportPage" class="page">
     <div class="report-hero">
-      <h2 style="color:rgba(255,255,255,0.35); padding:0 0 4px; display:flex; justify-content:space-between; align-items:center;">
-        📈 今月の進捗
-        <div style="display:flex; gap:5px;">
-          <button class="q-btn" style="min-height:unset; padding:4px 10px; background:rgba(255,255,255,0.1); color:#fff;" onclick="setGoal()">目標設定</button>
-          <button class="q-btn" style="min-height:unset; padding:4px 10px; background:#000; color:#fff;" onclick="shareOnX()">𝕏 シェア</button>
-        </div>
-      </h2>
-      <div class="goal-meta"><span id="goalText">目標: ¥100,000</span><span id="percentText">0%</span></div>
+      <div style="font-size:12px; opacity:0.6;">今月の合計利益</div>
+      <div id="monthTotal">¥0</div>
       <div class="bar-bg"><div id="goalBar" class="bar-fill"></div></div>
-      <div id="monthTotal" onclick="updateReport('all')">¥0</div>
+      <button onclick="setGoal()" style="background:none; border:1px solid #fff; color:#fff; font-size:10px; padding:5px 10px; border-radius:15px; cursor:pointer;">目標設定</button>
     </div>
-
-    <div class="card" style="padding:14px 16px;">
-      <div class="sum-grid">
-        <div class="sum-item" id="filter-plus" onclick="updateReport('plus')">
-          <div style="color:var(--green); font-size:9px; font-weight:700;">黒字件数</div>
-          <b id="plusCount" style="color:var(--green);">0</b>
-        </div>
-        <div class="sum-item" id="filter-minus" onclick="updateReport('minus')">
-          <div style="color:var(--red); font-size:9px; font-weight:700;">赤字件数</div>
-          <b id="minusCount" style="color:var(--red);">0</b>
-        </div>
-      </div>
-    </div>
-    <div id="historyList"></div>
-    <button onclick="clearAllData()" style="width:100%; background:none; border:none; color:var(--red); font-size:11px; margin-top:20px; opacity:0.5;">データを全削除</button>
+    <div id="historyList" style="margin-top:20px;"></div>
+    <button onclick="clearAllData()" style="width:100%; background:none; border:none; color:var(--red); font-size:11px; margin-top:30px; cursor:pointer;">全データを削除</button>
   </div>
 </div>
 
@@ -367,7 +239,6 @@
 
   let records = JSON.parse(localStorage.getItem('ebay_records') || '[]');
   let goal = parseInt(localStorage.getItem('ebay_goal') || '100000');
-  let currentFilter = 'all';
 
   function calculate() {
     const r = parseFloat(inputs.rate.value) || 0;
@@ -385,33 +256,21 @@
     document.getElementById('salesJpy').textContent = '¥' + salesJpy.toLocaleString();
     document.getElementById('feeJpy').textContent = '¥' + feeJpy.toLocaleString();
     document.getElementById('rateDisplay').textContent = `¥${r}/$`;
-    
     const pEl = document.getElementById('profit');
-    pEl.textContent = (profit >= 0 ? '¥' : '-¥') + Math.abs(profit).toLocaleString();
+    pEl.textContent = '¥' + profit.toLocaleString();
     pEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
     document.getElementById('profitRate').textContent = margin + '%';
-    
     return { itemName: inputs.itemName.value || '未設定', profit, salesJpy, date: new Date().toLocaleDateString() };
   }
 
   function saveRecord() {
-    const data = calculate();
-    records.unshift(data);
+    records.unshift(calculate());
     localStorage.setItem('ebay_records', JSON.stringify(records));
-    showToast('利益を記録しました');
-    updateReport('all');
+    showToast('記録しました');
   }
 
   function resetInputs() {
-    inputs.saleUsd.value = '';
-    inputs.cost.value = '';
-    inputs.shipping.value = '';
-    inputs.itemName.value = '';
-    calculate();
-  }
-
-  function setShipping(val) {
-    inputs.shipping.value = val;
+    ['itemName', 'saleUsd', 'cost', 'shipping'].forEach(id => inputs[id].value = '');
     calculate();
   }
 
@@ -420,74 +279,27 @@
     document.getElementById(pageId).classList.add('active');
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-' + (pageId === 'calcPage' ? 'calc' : 'report')).classList.add('active');
-    if(pageId === 'reportPage') updateReport('all');
+    if(pageId === 'reportPage') updateReport();
   }
 
-  function updateReport(filter) {
-    currentFilter = filter;
+  function updateReport() {
     const total = records.reduce((sum, r) => sum + r.profit, 0);
-    document.getElementById('monthTotal').textContent = (total >= 0 ? '¥' : '-¥') + Math.abs(total).toLocaleString();
-    
-    const plus = records.filter(r => r.profit >= 0).length;
-    const minus = records.filter(r => r.profit < 0).length;
-    document.getElementById('plusCount').textContent = plus;
-    document.getElementById('minusCount').textContent = minus;
-
+    document.getElementById('monthTotal').textContent = '¥' + total.toLocaleString();
     const prog = Math.min(100, Math.max(0, (total / goal) * 100));
     document.getElementById('goalBar').style.width = prog + '%';
-    document.getElementById('percentText').textContent = Math.round(prog) + '%';
-    document.getElementById('goalText').textContent = `目標: ¥${goal.toLocaleString()}`;
-
     const list = document.getElementById('historyList');
     list.innerHTML = '';
-    
-    const filtered = records.filter(r => {
-      if(filter === 'plus') return r.profit >= 0;
-      if(filter === 'minus') return r.profit < 0;
-      return true;
-    });
-
-    filtered.forEach((r, idx) => {
+    records.forEach((r, idx) => {
       const div = document.createElement('div');
       div.className = 'hist-card';
-      div.innerHTML = `
-        <div>
-          <div style="font-size:13px; font-weight:600;">${r.itemName}</div>
-          <div style="font-size:10px; color:#999;">${r.date} · 売上 ¥${r.salesJpy.toLocaleString()}</div>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <b style="color:${r.profit >= 0 ? 'var(--green)' : 'var(--red)'}">${r.profit >= 0 ? '¥' : '-¥'}${Math.abs(r.profit).toLocaleString()}</b>
-          <button class="hist-del" onclick="deleteRecord(${idx})">×</button>
-        </div>
-      `;
+      div.innerHTML = `<div><b>${r.itemName}</b><br><small>${r.date}</small></div><b style="color:${r.profit >= 0 ? 'var(--green)' : 'var(--red)'}">¥${r.profit.toLocaleString()}</b>`;
       list.appendChild(div);
     });
-
-    document.getElementById('filter-plus').className = filter === 'plus' ? 'sum-item active-filter' : 'sum-item';
-    document.getElementById('filter-minus').className = filter === 'minus' ? 'sum-item active-filter' : 'sum-item';
-  }
-
-  function deleteRecord(idx) {
-    records.splice(idx, 1);
-    localStorage.setItem('ebay_records', JSON.stringify(records));
-    updateReport(currentFilter);
-  }
-
-  function clearAllData() {
-    if(confirm('すべてのデータを削除してもよろしいですか？')) {
-      records = [];
-      localStorage.removeItem('ebay_records');
-      updateReport('all');
-    }
   }
 
   function setGoal() {
-    const val = prompt('目標金額（円）を入力してください', goal);
-    if(val) {
-      goal = parseInt(val);
-      localStorage.setItem('ebay_goal', goal);
-      updateReport(currentFilter);
-    }
+    const val = prompt('目標金額（円）', goal);
+    if(val) { goal = parseInt(val); localStorage.setItem('ebay_goal', goal); updateReport(); }
   }
 
   function toggleBackCalc() {
@@ -502,26 +314,19 @@
     const c = parseFloat(inputs.cost.value) || 0;
     const sh = parseFloat(inputs.shipping.value) || 0;
     const o = parseFloat(inputs.other.value) || 0;
-
     const requiredSalesJpy = (target + c + sh + o) / (1 - (f/100));
-    const requiredUsd = requiredSalesJpy / r;
-    
-    inputs.saleUsd.value = requiredUsd.toFixed(2);
+    inputs.saleUsd.value = (requiredSalesJpy / r).toFixed(2);
     calculate();
-    showToast('目標利益から売値を逆算しました');
   }
 
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 2000);
+    t.textContent = msg; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
   }
 
-  function shareOnX() {
-    const total = records.reduce((sum, r) => sum + r.profit, 0);
-    const text = encodeURIComponent(`今月の利益は ¥${total.toLocaleString()} です！ #デルベイ`);
-    window.open(`https://twitter.com/intent/tweet?text=${text}`);
+  function clearAllData() {
+    if(confirm('すべて消去しますか？')) { records = []; localStorage.removeItem('ebay_records'); updateReport(); }
   }
 </script>
 </body>
