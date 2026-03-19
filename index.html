@@ -47,7 +47,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 【修正箇所】罰ボタン（スピンボタン）を非表示にする設定 */
+    /* 罰ボタン（スピンボタン）を非表示にする設定 */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -185,6 +185,7 @@
       padding: 11px 12px; border: 1px solid #e5e5e5; border-radius: var(--r-sm);
       font-size: 15px; font-family: 'Inter', sans-serif; background: var(--bg); width: 100%;
       min-height: 44px; -webkit-appearance: none;
+      text-align: center; /* 入力文字を中央（正面）に寄せる修正 */
     }
     .iw input { border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; flex: 1; }
     input:focus { border-color: var(--main); background: var(--surface); box-shadow: 0 0 0 3px rgba(192,89,58,0.10); }
