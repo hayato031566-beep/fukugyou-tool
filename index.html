@@ -502,7 +502,7 @@
   const inputs = {};
   ids.forEach(id => inputs[id] = document.getElementById(id));
 
-  // ★フィルター状態を保持する変数を追加
+  // フィルター状態を保持する変数
   let currentFilter = 'all';
 
   window.onload = () => {
@@ -569,9 +569,8 @@
     showToast('保存しました！');
   }
 
-  // ★フィルター状態を記憶して更新するように修正
   function updateReport(filter = currentFilter) {
-    currentFilter = filter;
+    currentFilter = filter; // ここで現在のフィルターを記憶
     const data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
     const goal = parseInt(localStorage.getItem('cfg_goal') || 100000);
     let mSum = 0, pCount = 0, mCount = 0;
@@ -586,6 +585,7 @@
     data.forEach(item => {
       mSum += item.profit;
       if(item.profit >= 0) pCount++; else mCount++;
+      // currentFilterに基づいて表示・非表示を切り替え
       let show = (currentFilter === 'all') || (currentFilter === 'plus' && item.profit >= 0) || (currentFilter === 'minus' && item.profit < 0);
       if(show) {
         const div = document.createElement('div');
@@ -613,13 +613,13 @@
     window.open(url, '_blank');
   }
 
-  // ★削除後に現在のフィルター状態を維持して再描画
   function deleteItem(id) {
     if(!confirm('削除しますか？')) return;
     let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
     data = data.filter(i => i.id !== id);
     localStorage.setItem('ebay_pro_data', JSON.stringify(data));
-    updateReport(); 
+    // 記憶している currentFilter を使って再描画
+    updateReport(currentFilter); 
   }
 
   function setGoal() {
