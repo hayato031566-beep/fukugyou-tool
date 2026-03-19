@@ -179,7 +179,6 @@
     .iw input { border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; flex: 1; }
     input:focus { border-color: var(--main); background: var(--surface); box-shadow: 0 0 0 3px rgba(192,89,58,0.10); }
 
-    /* ── 金額入力の罰ボタン（スピン/クリア）を非表示にする設定 ── */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -452,4 +451,78 @@
 
     data.forEach(item => {
       mSum += item.profit;
-      if(item.profit >= 0) pCount++; else m
+      if(item.profit >= 0) pCount++; else mCount++;
+      
+      if(currentFilter === 'all' || (currentFilter === 'plus' && item.profit >= 0) || (currentFilter === 'minus' && item.profit < 0)) {
+        const div = document.createElement('div');
+        div.className = 'hist-card';
+        div.innerHTML = `
+          <div>
+            <div style="font-size:13px; font-weight:600;">${item.name}</div>
+            <div style="font-size:10px; color:var(--ink3);">${new Date(item.date).toLocaleDateString()} · Sale: $${item.sale}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <b style="color:${item.profit >= 0 ? 'var(--green)' : 'var(--red)'}">${fmt(item.profit)}</b>
+            <button class="hist-del" onclick="deleteRecord(${item.id})">×</button>
+          </div>
+        `;
+        listEl.appendChild(div);
+      }
+    });
+
+    document.getElementById('monthTotal').textContent = fmt(mSum);
+    document.getElementById('plusCount').textContent = pCount;
+    document.getElementById('minusCount').textContent = mCount;
+    document.getElementById('goalText').textContent = '目標: ' + fmt(goal);
+    
+    const pct = Math.min(100, Math.max(0, (mSum / goal) * 100));
+    document.getElementById('percentText').textContent = Math.floor(pct) + '%';
+    document.getElementById('goalBar').style.width = pct + '%';
+  }
+
+  function deleteRecord(id) {
+    let data = JSON.parse(localStorage.getItem('ebay_pro_data') || '[]');
+    data = data.filter(i => i.id !== id);
+    localStorage.setItem('ebay_pro_data', JSON.stringify(data));
+    updateReport();
+  }
+
+  function setGoal() {
+    const val = prompt('今月の利益目標（円）を入力してください', '100000');
+    if(val) {
+      localStorage.setItem('cfg_goal', val);
+      updateReport();
+    }
+  }
+
+  function resetInputs() {
+    inputs.saleUsd.value = '';
+    inputs.cost.value = '';
+    inputs.shipping.value = '';
+    inputs.itemName.value = '';
+    calc();
+    showToast('リセットしました');
+  }
+
+  function showToast(m) {
+    const t = document.getElementById('toast');
+    t.textContent = m;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
+  }
+
+  function clearAllData() {
+    if(confirm('全ての記録を削除しますか？')) {
+      localStorage.removeItem('ebay_pro_data');
+      updateReport();
+    }
+  }
+
+  function shareOnX() {
+    const total = document.getElementById('monthTotal').textContent;
+    const text = `今月のeBay利益は ${total} でした！\n「デルベイ」で利益管理中 🔥\n#eBay輸出 #デルベイ`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`);
+  }
+</script>
+</body>
+</html>
