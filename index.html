@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     /* 原因だった「manifest.json」の読み込みを完全に排除し、
-       PCでもスマホでも「中央寄せ」を強制するスタイルのみに絞っています。
+        PCでもスマホでも「中央寄せ」を強制するスタイルのみに絞っています。
     */
     :root {
       --main:    #c0593a;
@@ -222,7 +222,6 @@
       <div style="font-size:12px; opacity:0.6;">今月の合計利益</div>
       <div id="monthTotal">¥0</div>
       <div class="bar-bg"><div id="goalBar" class="bar-fill"></div></div>
-      <button onclick="setGoal()" style="background:none; border:1px solid #fff; color:#fff; font-size:10px; padding:5px 10px; border-radius:15px; cursor:pointer;">目標設定</button>
     </div>
     <div id="historyList" style="margin-top:20px;"></div>
     <button onclick="clearAllData()" style="width:100%; background:none; border:none; color:var(--red); font-size:11px; margin-top:30px; cursor:pointer;">全データを削除</button>
@@ -295,11 +294,6 @@
       div.innerHTML = `<div><b>${r.itemName}</b><br><small>${r.date}</small></div><b style="color:${r.profit >= 0 ? 'var(--green)' : 'var(--red)'}">¥${r.profit.toLocaleString()}</b>`;
       list.appendChild(div);
     });
-  }
-
-  function setGoal() {
-    const val = prompt('目標金額（円）', goal);
-    if(val) { goal = parseInt(val); localStorage.setItem('ebay_goal', goal); updateReport(); }
   }
 
   function toggleBackCalc() {
